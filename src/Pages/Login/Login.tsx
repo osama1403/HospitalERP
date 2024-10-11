@@ -8,7 +8,7 @@ const Login = () => {
   return (
     <>
       <div className="w-full min-h-screen flex items-center justify-center px-3 py-10 login" >
-        <Card className="relative z-10 w-full max-w-sm bg-primary-foreground/85 backdrop-blur-sm">
+        <Card className="relative z-10 w-full max-w-sm bg-background/70 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>
