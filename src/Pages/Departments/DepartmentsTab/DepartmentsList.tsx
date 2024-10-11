@@ -11,9 +11,6 @@ export interface department {
 
 const demoDep: department = { name: 'Example Department', rooms: 12, availableRooms: 3 }
 
-
-
-
 const DepartmentsList = () => {
   const [departmentToUpdate, setDepartmentToUpdate] = useState<department | null>(null)
   const [departmentToDelete, setDepartmentToDelete] = useState<department | null>(null)
@@ -36,6 +33,7 @@ const DepartmentsList = () => {
         <DepartmentCard department={demoDep} updateDep={setDepartmentToUpdate} deleteDep={setDepartmentToDelete} />
         <DepartmentCard department={demoDep} updateDep={setDepartmentToUpdate} deleteDep={setDepartmentToDelete} />
       </div>
+
     </div>
   );
 }

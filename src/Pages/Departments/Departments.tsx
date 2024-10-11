@@ -1,6 +1,8 @@
 import PageTitle from "@/components/PageTitle";
-import { Tabs,TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import DepartmentsList from "./DepartmentsList";
+import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import DepartmentsList from "./DepartmentsTab/DepartmentsList";
+import withAlert from "@/Hoc/withAlert";
+import { memo } from 'react'
 
 const Departments = () => {
 
@@ -38,5 +40,4 @@ const Departments = () => {
   );
 }
 
-export default Departments;
-
+export default withAlert(memo(Departments));

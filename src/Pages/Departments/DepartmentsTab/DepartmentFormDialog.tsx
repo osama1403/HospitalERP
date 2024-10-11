@@ -12,8 +12,8 @@ import {
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from '@/components/ui/label';
-
 import { department } from './DepartmentsList';
+import useAlert from '@/hooks/useAlert';
 
 
 interface depFormProps {
@@ -23,6 +23,8 @@ interface depFormProps {
 
 const DepartmentFormDialog = ({ departmentToUpdate, setDepartmentToUpdate }: depFormProps) => {
   const updateMode = !!departmentToUpdate
+
+  const setAlert = useAlert()
 
   const [name, setName] = useState<string>('')
   const [open, setOpen] = useState(false)
@@ -45,10 +47,14 @@ const DepartmentFormDialog = ({ departmentToUpdate, setDepartmentToUpdate }: dep
   }
 
   const handleCreate = () => {
-
+    //DEMO ALERT
+    setAlert({ text: '(Demo Alert) \n Cannot create department', type: 'error' })
+    handleClose()
   }
+  
   const handleUpdate = () => {
-
+    setAlert({ text: '(Demo Alert)\nDepartment updated successfully', type: 'success' })
+    handleClose()
   }
 
   return (
@@ -74,12 +80,12 @@ const DepartmentFormDialog = ({ departmentToUpdate, setDepartmentToUpdate }: dep
         </div>
 
         <DialogFooter className="sm:justify-between gap-2">
-            <Button type="button" variant="secondary" className='rounded-lg' onClick={handleClose}>
-              Close
-            </Button>
+          <Button type="button" variant="secondary" className='rounded-lg' onClick={handleClose}>
+            Close
+          </Button>
           {
             updateMode ?
-              <Button disabled={departmentToUpdate?.name === name} className='rounded-lg' onClick={() => { handleUpdate() }}>
+              <Button disabled={departmentToUpdate?.name === name.trim()} className='rounded-lg' onClick={() => { handleUpdate() }}>
                 Update
               </Button>
               :
