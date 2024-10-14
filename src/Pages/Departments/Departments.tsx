@@ -3,6 +3,7 @@ import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import DepartmentsList from "./DepartmentsTab/DepartmentsList";
 import withAlert from "@/Hoc/withAlert";
 import { memo } from 'react'
+import RoomsList from "./RoomsTab/RoomsList";
 
 const Departments = () => {
 
@@ -32,7 +33,7 @@ const Departments = () => {
         </TabsContent>
 
         <TabsContent value="rooms">
-          <p>rooms</p>
+          <RoomsList/>
         </TabsContent>
       </Tabs>
 
