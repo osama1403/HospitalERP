@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog"
 
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { useCallback } from "react";
 
 
 interface confirmDialogProps<T> {
@@ -16,16 +17,14 @@ interface confirmDialogProps<T> {
   setElement: React.Dispatch<React.SetStateAction<T | null>>;
   title: string;
   message: string;
-  action: (E: T) => any
+  action(E: T): void;
 }
-
-
 
 // Generic confirmation dialog,
 // Triggered (opened) by making element Truthy
 // On confirm: action is called with the element as paramenter 
 
-const ConfirmDialog = <T,>({ element, setElement, title, message }: confirmDialogProps<T>) => {
+const ConfirmDialog = <T,>({ element, setElement, title, message, action }: confirmDialogProps<T>) => {
 
   const handleClose = () => {
     if (element) {
@@ -33,9 +32,9 @@ const ConfirmDialog = <T,>({ element, setElement, title, message }: confirmDialo
     }
   }
 
-  const handleDelete = () => {
-    console.log(`Confirmed Action ${message}`);
-  }
+  const handleConfirm = useCallback(() => {
+    if (element) action(element)
+  }, [action, element])
 
   return (
     <Dialog open={!!element} onOpenChange={(open) => { if (!open) setElement(null) }} >
@@ -55,7 +54,7 @@ const ConfirmDialog = <T,>({ element, setElement, title, message }: confirmDialo
           <Button type="button" variant="secondary" className='rounded-lg' onClick={handleClose}>
             Close
           </Button>
-          <Button variant={'destructive'} className='rounded-lg' onClick={handleDelete}>
+          <Button variant={'destructive'} className='rounded-lg' onClick={handleConfirm}>
             Confirm
           </Button>
         </DialogFooter>
