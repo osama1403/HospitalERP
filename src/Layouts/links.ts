@@ -1,7 +1,7 @@
 import {
   Home,
   LucideIcon,
-  ShoppingCart,
+  Plus,
   LayoutGrid
 } from "lucide-react"
 
@@ -22,11 +22,11 @@ const links = {
     to: '/departments',
     text: 'Departments'
   },
-  // test: {
-  //   icon: ShoppingCart,
-  //   to: '/test',
-  //   text: 'Test'
-  // }
+  register: {
+    icon: Plus,
+    to: '/register',
+    text: 'Register'
+  }
 }
 
 export default links
@@ -36,7 +36,7 @@ export const getLinksForRole = (role: string): navigationLink[] => {
   let result: navigationLink[] = []
   switch (role) {
     case 'ADMIN': {
-      result = [links.home, links.departments]
+      result = [links.home, links.departments, links.register]
     }
   }
   return result

@@ -73,3 +73,7 @@
 .login{
   background-image: linear-gradient(360deg, #0095d49c, transparent);
 }
+
+.rdp-vhidden {
+  @apply hidden;
+}
