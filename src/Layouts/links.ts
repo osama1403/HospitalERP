@@ -2,7 +2,8 @@ import {
   Home,
   LucideIcon,
   Plus,
-  LayoutGrid
+  LayoutGrid,
+  UserRound
 } from "lucide-react"
 
 interface navigationLink {
@@ -11,7 +12,11 @@ interface navigationLink {
   text: string;
 }
 
-const links = {
+interface linksType{
+  [index:string]:navigationLink
+}
+
+const links:linksType = {
   home: {
     icon: Home,
     to: '/',
@@ -26,6 +31,11 @@ const links = {
     icon: Plus,
     to: '/register',
     text: 'Register'
+  },
+  admissions: {
+    icon: UserRound,
+    to: '/admissions',
+    text: 'Admissions'
   }
 }
 
@@ -36,7 +46,7 @@ export const getLinksForRole = (role: string): navigationLink[] => {
   let result: navigationLink[] = []
   switch (role) {
     case 'ADMIN': {
-      result = [links.home, links.departments, links.register]
+      result = [links.home, links.departments, links.register,links.admissions]
     }
   }
   return result
