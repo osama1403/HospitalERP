@@ -6,6 +6,7 @@ import Departments from './Pages/Departments/Departments'
 import PatientRegestration from './Pages/Patients Regestration/PatientRegestration'
 import Admissions from './Pages/Admissions/Admissions'
 import Staff from './Pages/Staff/Staff'
+import Doctors from './Pages/Doctors/Doctors'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path='/login' element={<Login/>} />
           <Route path='/admissions' element={<Admissions/>} />
           <Route path='/staff' element={<Staff/>} />
+          <Route path='/doctors' element={<Doctors/>} />
         </Route>
       </Routes>
 
