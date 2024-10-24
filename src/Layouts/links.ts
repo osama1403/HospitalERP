@@ -3,7 +3,8 @@ import {
   LucideIcon,
   Plus,
   LayoutGrid,
-  UserRound
+  UserRound,
+  List
 } from "lucide-react"
 
 interface navigationLink {
@@ -12,11 +13,11 @@ interface navigationLink {
   text: string;
 }
 
-interface linksType{
-  [index:string]:navigationLink
+interface linksType {
+  [index: string]: navigationLink
 }
 
-const links:linksType = {
+const links: linksType = {
   home: {
     icon: Home,
     to: '/',
@@ -32,8 +33,13 @@ const links:linksType = {
     to: '/register',
     text: 'Register'
   },
-  admissions: {
+  staff: {
     icon: UserRound,
+    to: '/staff',
+    text: 'Staff'
+  },
+  admissions: {
+    icon: List,
     to: '/admissions',
     text: 'Admissions'
   }
@@ -46,7 +52,7 @@ export const getLinksForRole = (role: string): navigationLink[] => {
   let result: navigationLink[] = []
   switch (role) {
     case 'ADMIN': {
-      result = [links.home, links.departments, links.register,links.admissions]
+      result = [links.home, links.departments, links.register, links.staff, links.admissions]
     }
   }
   return result
