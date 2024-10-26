@@ -18,7 +18,7 @@ interface linksType {
   [index: string]: navigationLink
 }
 
-const links: linksType = {
+const links = {
   home: {
     icon: Home,
     to: '/',
@@ -48,6 +48,11 @@ const links: linksType = {
     icon: Heart,
     to: '/doctors',
     text: 'Doctors'
+  },
+  patient: {
+    icon: Heart,
+    to: '/patient',
+    text: 'Patient'
   }
 }
 
@@ -58,7 +63,7 @@ export const getLinksForRole = (role: string): navigationLink[] => {
   let result: navigationLink[] = []
   switch (role) {
     case 'ADMIN': {
-      result = [links.home, links.departments, links.register, links.staff, links.admissions, links.doctors]
+      result = [links.home, links.departments, links.register, links.staff, links.admissions, links.doctors,links.patient]
     }
   }
   return result
