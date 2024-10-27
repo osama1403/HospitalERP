@@ -7,11 +7,11 @@ const ActiveAdmission = () => {
       <p className="text-2xl text-red-500 mb-2 ">Active admission:</p>
       <div className="h-[1px] bg-red-400 my-4"></div>
       <div className="max-w-3xl">
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(270px,1fr))] gap-2 ">
-          <p className="flex"><span className="text-primary font-medium mr-2">Admission date: </span>12/2/2024 18:30pm</p>
-          <p className="flex"><span className="text-primary font-medium mr-2">Expected discharge: </span>in two weeks</p>
-          <p className="flex"><span className="text-primary font-medium mr-2">Dedicated Doctor: </span>Jack maxwell</p>
-          <p className="flex"><span className="text-primary font-medium mr-2">Department/Room:</span>ICU - 12/4</p>
+        <div className="sm:grid sm:grid-cols-[repeat(auto-fit,minmax(270px,1fr))] gap-2 space-y-2 sm:space-y-0 ">
+          <p className="flex flex-wrap"><span className="text-primary font-medium mr-2">Admission date: </span>12/2/2024 18:30pm</p>
+          <p className="flex flex-wrap"><span className="text-primary font-medium mr-2">Expected discharge: </span>in two weeks</p>
+          <p className="flex flex-wrap"><span className="text-primary font-medium mr-2">Dedicated Doctor: </span>Jack maxwell</p>
+          <p className="flex flex-wrap"><span className="text-primary font-medium mr-2">Department/Room:</span>ICU - 12/4</p>
         </div>
       </div>
 

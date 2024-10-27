@@ -110,7 +110,7 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
   const handleProceed = () => {
     // call passed finction with room as parameter
     // close dialog
-    if(selectedRoom && onSelect){
+    if (selectedRoom && onSelect) {
       onSelect(selectedRoom)
     }
     handleClose()
@@ -137,7 +137,7 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
         <div className="max-w-fit min-w-[200px]">
 
           {/* FILTER BY DEPARTMENT */}
-          <Select defaultValue={filterDepartment} onValueChange={(v) => { setFilterDepartment(v) }}>
+          <Select defaultValue={filterDepartment} onValueChange={(v) => { setFilterDepartment(v); setSelectedRoom(null) }}>
             <SelectTrigger id='room-dep' className="">
               <SelectValue placeholder="Select Department" />
             </SelectTrigger>
@@ -152,14 +152,15 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
           </Select>
         </div>
 
-        <div className="max-h-96 scrollbar-hide">
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
+        <div className="max-h-96 scrollbar-hide overflow-auto">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
             {
               filteredRooms?.length > 0 &&
               filteredRooms?.map(room => (
-                <div className={`p-3 rounded-xl border border-primary/15  cursor-pointer ${selectedRoom?.id === room.id ? 'bg-green-500/25' : 'bg-muted hover:bg-primary/15'}`}
+                <div key={room.id} className={`p-3 rounded-xl border border-primary/15  cursor-pointer ${selectedRoom?.id === room.id ? 'bg-green-500/25' : 'bg-muted hover:bg-primary/15'}`}
                   onClick={() => { setSelectedRoom(room) }}>
-                  <p>{room.name}</p>
+                  <p className="text-sm text-primary">{room.depName}</p>
+                  <p className="text-lg">{room.name}</p>
                   <p>size: {room.size}</p>
                   <p>free: {room.available}</p>
                 </div>

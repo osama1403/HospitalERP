@@ -18,7 +18,7 @@ const ChangeRoom = () => {
   }
 
   const handleChangeRoom = () => {
-    setAlert({text:'room changed successfully',type:'success'})
+    setAlert({ text: 'room changed successfully', type: 'success' })
     handleClose()
   }
 
@@ -40,9 +40,9 @@ const ChangeRoom = () => {
 
 
 
-        <div className="text-lg ">
-          <p>From: ICU: 12/3</p>
-          <p>To: {selectedRoom?.depName}{selectedRoom?.name}</p>
+        <div className="text-lg">
+          <p>From: <span className="text-primary">ICU - 12/3</span></p>
+          <p>To: <span className="text-primary">{selectedRoom?.depName} - {selectedRoom?.name}</span></p>
         </div>
         <div className="w-fit mb-4">
           <RoomSelectDialog onSelect={(r) => { setSelectedRoom(r) }} />
@@ -56,7 +56,7 @@ const ChangeRoom = () => {
           </Button>
 
           <Button disabled={!selectedRoom} className='rounded-lg' onClick={handleChangeRoom}>
-            Create
+            Submit
           </Button>
 
         </DialogFooter>
