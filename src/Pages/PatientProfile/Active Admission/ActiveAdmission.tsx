@@ -1,11 +1,11 @@
-import NoteInput from "./NoteInput";
+import AdmissionActions from "./AdmissionActions";
 
 const ActiveAdmission = () => {
 
-  
-
   return (
     <div className="w-full p-4 mt-6 rounded-xl border-[3px] border-red-400 bg-mutd  ">
+      <p className="text-2xl text-red-500 mb-2 ">Active admission:</p>
+      <div className="h-[1px] bg-red-400 my-4"></div>
       <div className="max-w-3xl">
         <div className="grid grid-cols-[repeat(auto-fit,minmax(270px,1fr))] gap-2 ">
           <p className="flex"><span className="text-primary font-medium mr-2">Admission date: </span>12/2/2024 18:30pm</p>
@@ -14,9 +14,12 @@ const ActiveAdmission = () => {
           <p className="flex"><span className="text-primary font-medium mr-2">Department/Room:</span>ICU - 12/4</p>
         </div>
       </div>
-      <div className="h-[1px] bg-green-800 my-4"></div>
 
-      <div className="mt-6 lg:grid grid-cols-5 gap-4 max-w-4xl">
+      <div className="mt-6 lg:grid grid-cols-5 gap-4 max-w-5xl">
+
+        <div className="col-span-2 order-2 mb-4 lg:mb-0">
+          <AdmissionActions />
+        </div>
 
         <div className="mb-4 lg:mb-0 col-span-3 p-4 space-y-3 max-h-96 overflow-auto bg-primary/5  rounded-xl scrollbar-hide">
           {
@@ -30,9 +33,7 @@ const ActiveAdmission = () => {
           }
         </div>
 
-        <div className="col-span-2">
-          <NoteInput/>
-        </div>
+
 
       </div>
     </div>
