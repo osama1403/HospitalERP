@@ -2,12 +2,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { useFormContext } from "react-hook-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/customCalender";
-import { format } from "date-fns";
+import { DateTimePicker } from "@/components/ui/dateTimePicker";
 
 const PatientInfo = () => {
   const { control } = useFormContext()
@@ -73,42 +68,7 @@ const PatientInfo = () => {
         render={({ field }) => (
           <FormItem>
           <FormLabel className='mb-2'>Date of birth</FormLabel>
-          <Popover>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full pl-3 text-left font-normal hover:bg-background",
-                    !field.value && "text-muted-foreground"
-                  )}
-                >
-                  {field.value ? (
-                    
-                    // new Date(field.value).toLocaleDateString()
-                    format(field.value, "PPP")
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                captionLayout="dropdown-buttons"
-                selected={field.value}
-                onSelect={field.onChange}
-                fromYear={1900}
-                toYear={2030}
-                disabled={(date) =>
-                  date > new Date() || date < new Date("1900-01-01")
-                }
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+          <DateTimePicker {...field} granularity="day" yearRange={100} displayFormat={{hour24:'PPP'}}/>
           <FormMessage />
         </FormItem>
         )}

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import NoteDialog from "./Action Dialogs/NoteDialog";
 import { useState } from "react";
 import ChangeRoom from "./Action Dialogs/ChangeRoom";
+import ScheduleSurgery from "./Action Dialogs/ScheduleSurgery";
 
 const AdmissionActions = () => {
 
@@ -19,7 +20,7 @@ const AdmissionActions = () => {
           optionsOpen &&
           <div className=" flex flex-col gap-2 p-2 border border-primary rounded-lg ">
             <ChangeRoom/>
-            <Button>Schedule Surgery</Button>
+            <ScheduleSurgery/>
             <Button>Discharge</Button>
           </div>
         }
