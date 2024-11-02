@@ -9,12 +9,15 @@ import {
   DialogTrigger,
   DialogFooter
 } from "@/components/ui/dialog"
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from '@/components/ui/label';
 import { department } from './DepartmentsList';
 import useAlert from '@/hooks/useAlert';
-
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from '@/api/axios'
+import { isAxiosError } from 'axios';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface depFormProps {
   departmentToUpdate: department | null;
@@ -23,22 +26,26 @@ interface depFormProps {
 
 const DepartmentFormDialog = ({ departmentToUpdate, setDepartmentToUpdate }: depFormProps) => {
   const updateMode = !!departmentToUpdate
-
   const setAlert = useAlert()
+  const queryClient = useQueryClient()
 
   const [name, setName] = useState<string>('')
+  const [type, setType] = useState<string>('')
   const [open, setOpen] = useState(false)
 
   useLayoutEffect(() => {
+    // 
     if (departmentToUpdate) {
       setName(departmentToUpdate.name)
+      setType(departmentToUpdate.type)
       setOpen(true)
     } else {
       setName('')
+      setType('')
     }
   }, [departmentToUpdate, open])
 
-
+  // Close the dialog
   const handleClose = () => {
     if (departmentToUpdate) {
       setDepartmentToUpdate(null)
@@ -46,16 +53,48 @@ const DepartmentFormDialog = ({ departmentToUpdate, setDepartmentToUpdate }: dep
     setOpen(false)
   }
 
+
+
+  const { isPending, mutate } = useMutation({
+    mutationFn: ({ dep, isUpdate }: { dep: any, isUpdate: boolean }) => {
+      if (isUpdate) {
+        return axios.post('/departments/update', dep)
+      } else {
+        return axios.post('/departments', dep)
+      }
+    },
+    onSuccess: () => {
+      setAlert({ text: updateMode ? 'department updated successfully' : 'department created successfully', type: 'success' })
+      queryClient.invalidateQueries({ queryKey: ['departments-and-rooms'] })
+      handleClose()
+    },
+    onError: (error) => {
+      if (isAxiosError(error) && error.response) {
+        setAlert({ text: error.response.data?.msg || 'something went wrong', type: 'error' })
+      }
+    }
+  })
+
+
+
   const handleCreate = () => {
-    //DEMO ALERT
-    setAlert({ text: '(Demo Alert) \n Cannot create department', type: 'error' })
-    handleClose()
+    mutate({
+      dep: {
+        department: { name: name, type: type }
+      },
+      isUpdate: false
+    })
   }
-  
+
   const handleUpdate = () => {
-    setAlert({ text: '(Demo Alert)\nDepartment updated successfully', type: 'success' })
-    handleClose()
+    mutate({
+      dep: {
+        department: { _id: departmentToUpdate?._id, name: name }
+      },
+      isUpdate: true
+    })
   }
+
 
   return (
     <Dialog open={open} onOpenChange={(open) => { open ? setOpen(open) : handleClose() }} >
@@ -74,10 +113,26 @@ const DepartmentFormDialog = ({ departmentToUpdate, setDepartmentToUpdate }: dep
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-2 my-2">
-          <Label htmlFor="department-name">Department Name:</Label>
-          <Input id='department-name' value={name} onChange={(e) => { setName(e.target.value) }} />
+        <div>
+          <div className="max-w-fit">
+            <Label htmlFor="department-type" className='mb-2 block'>Department Type:</Label>
+            <Select disabled={updateMode} value={type} onValueChange={(v) => { setType(v) }}>
+              <SelectTrigger id='department-type' className="w-full gap-2">
+                <SelectValue placeholder="Select Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={'private'}>Private</SelectItem>
+                <SelectItem value={'operational'}>Operational</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className=" mt-4">
+            <Label htmlFor="department-name" className='mb-2 block'>Department Name:</Label>
+            <Input id='department-name' value={name} onChange={(e) => { setName(e.target.value) }} />
+          </div>
         </div>
+
 
         <DialogFooter className="sm:justify-between gap-2">
           <Button type="button" variant="secondary" className='rounded-lg' onClick={handleClose}>
@@ -85,12 +140,12 @@ const DepartmentFormDialog = ({ departmentToUpdate, setDepartmentToUpdate }: dep
           </Button>
           {
             updateMode ?
-              <Button disabled={departmentToUpdate?.name === name.trim()} className='rounded-lg' onClick={() => { handleUpdate() }}>
-                Update
+              <Button disabled={isPending || departmentToUpdate?.name === name.trim()} className='rounded-lg' onClick={() => { handleUpdate() }}>
+                Update {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               </Button>
               :
-              <Button disabled={!(name.trim())} className='rounded-lg' onClick={() => { handleCreate() }}>
-                Create
+              <Button disabled={isPending || !(name.trim() || !type)} className='rounded-lg' onClick={() => { handleCreate() }}>
+                Create {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               </Button>
           }
         </DialogFooter>

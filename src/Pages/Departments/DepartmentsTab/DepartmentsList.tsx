@@ -4,14 +4,17 @@ import DepartmentFormDialog from "./DepartmentFormDialog";
 import DepatmentDeleteDialog from "./DepartmentDeleteDialog";
 
 export interface department {
-  name: string,
-  rooms: number,
-  availableRooms: number
+  _id: string;
+  name: string;
+  type:string;
+  rooms: number;
 }
 
-const demoDep: department = { name: 'Example Department', rooms: 12, availableRooms: 3 }
+interface DepListProps {
+  departments: department[];
+}
 
-const DepartmentsList = () => {
+const DepartmentsList = ({ departments }: DepListProps) => {
   const [departmentToUpdate, setDepartmentToUpdate] = useState<department | null>(null)
   const [departmentToDelete, setDepartmentToDelete] = useState<department | null>(null)
 
@@ -27,11 +30,11 @@ const DepartmentsList = () => {
       />
 
       <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5 mt-5">
-        <DepartmentCard department={demoDep} updateDep={setDepartmentToUpdate} deleteDep={setDepartmentToDelete} />
-        <DepartmentCard department={demoDep} updateDep={setDepartmentToUpdate} deleteDep={setDepartmentToDelete} />
-        <DepartmentCard department={demoDep} updateDep={setDepartmentToUpdate} deleteDep={setDepartmentToDelete} />
-        <DepartmentCard department={demoDep} updateDep={setDepartmentToUpdate} deleteDep={setDepartmentToDelete} />
-        <DepartmentCard department={demoDep} updateDep={setDepartmentToUpdate} deleteDep={setDepartmentToDelete} />
+        {
+          departments.map(el => (
+            <DepartmentCard key={el._id} department={el} updateDep={setDepartmentToUpdate} deleteDep={setDepartmentToDelete} />
+          ))
+        }
       </div>
 
     </div>

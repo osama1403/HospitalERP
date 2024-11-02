@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog"
 
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Loader2 } from "lucide-react";
 import { useCallback } from "react";
 
 
@@ -18,13 +19,14 @@ interface confirmDialogProps<T> {
   title: string;
   message: string;
   action(E: T): void;
+  isLoading?: boolean;
 }
 
 // Generic confirmation dialog,
 // Triggered (opened) by making element Truthy
 // On confirm: action is called with the element as paramenter 
 
-const ConfirmDialog = <T,>({ element, setElement, title, message, action }: confirmDialogProps<T>) => {
+const ConfirmDialog = <T,>({ element, setElement, title, message, action, isLoading = false }: confirmDialogProps<T>) => {
 
   const handleClose = () => {
     if (element) {
@@ -54,8 +56,8 @@ const ConfirmDialog = <T,>({ element, setElement, title, message, action }: conf
           <Button type="button" variant="secondary" className='rounded-lg' onClick={handleClose}>
             Close
           </Button>
-          <Button variant={'destructive'} className='rounded-lg' onClick={handleConfirm}>
-            Confirm
+          <Button disabled={isLoading} variant={'destructive'} className='flex items-center gap-1 rounded-lg' onClick={handleConfirm}>
+            Confirm {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
           </Button>
         </DialogFooter>
       </DialogContent>

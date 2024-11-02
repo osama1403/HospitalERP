@@ -10,10 +10,10 @@ interface roomCardParams {
   deleteRoom: React.Dispatch<React.SetStateAction<room | null>>;
 }
 
- const RoomCard = ({ room, updateRoom, deleteRoom }: roomCardParams) => {
+const RoomCard = ({ room, updateRoom, deleteRoom }: roomCardParams) => {
   return (
     <div className="relative w-full p-4 rounded-xl shadow-md flex flex-col justify-between max-w-56 mx-auto bg-muted overflow-hidden">
-      <p className="absolute top-0 left-0 w-2/3 rounded-br-xl bg-primary/85 text-primary-foreground py-[2px] text-center text-xs">{room.departmentName}</p>
+      <p className="absolute top-0 left-0 w-2/3 rounded-br-xl bg-primary/85 text-primary-foreground py-[2px] text-center text-xs">{room.depName}</p>
       <div className="grow mt-3 flex items-center">
         <h3 className="text-xl font-semibold leading-none text-primary">{room.name}</h3>
       </div>
@@ -21,6 +21,9 @@ interface roomCardParams {
       <div className="flex gap-3 justify-between items-end mt-6 ">
         <div>
           <p className="text leading-none text-muted-foreground">Size: <span className="text-primary">{room.size}</span> </p>
+        </div>
+        <div>
+          <p className="text leading-none text-muted-foreground">Vacant: <span className="text-primary">{room.size - room.occupied}</span> </p>
         </div>
 
       </div>
@@ -52,5 +55,5 @@ interface roomCardParams {
     </div>
   )
 
-} 
+}
 export default memo(RoomCard)

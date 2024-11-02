@@ -87,3 +87,11 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* duration for animating modals - selects ...etc */
+.data-\[state\=open\]\:animate-in[data-state="open"]{
+  animation-duration: 250ms !important;
+}
+.data-\[state\=closed\]\:animate-out[data-state="closed"]{
+  animation-duration: 250ms !important;
+}

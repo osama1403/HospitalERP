@@ -19,10 +19,7 @@ const DepartmentCard = ({ department, updateDep, deleteDep }: depCardParams) => 
       </div>
 
       <div className="flex gap-3 justify-between items-end mt-6 ">
-        <div>
           <p className="text-lg leading-none">{department.rooms} <span className="text-sm text-muted-foreground">Rooms</span></p>
-          <p className="text-lg leading-none">{department.availableRooms} <span className="text-sm text-muted-foreground">Free</span></p>
-        </div>
 
         <Button size={"icon"} variant={"outline"} className="w-8 h-8 rounded-lg hover:bg-primary hover:text-primary-foreground">
           <ChevronRight className="w-6 h-6" />

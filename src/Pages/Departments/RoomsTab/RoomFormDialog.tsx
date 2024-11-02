@@ -4,23 +4,28 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import {
+  SubmitHandler,
   useForm
 } from 'react-hook-form'
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 // import { Label } from '@/components/ui/label';
 import { room } from './RoomsList';
 import useAlert from '@/hooks/useAlert';
-
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from '@/api/axios'
+import { isAxiosError } from 'axios';
+import { department } from '../DepartmentsTab/DepartmentsList';
 
 interface roomFormProps {
+  departments: department[];
   roomToUpdate: room | null;
   setRoomToUpdate: React.Dispatch<React.SetStateAction<room | null>>;
 }
 
-const RoomFormDialog = ({ roomToUpdate, setRoomToUpdate }: roomFormProps) => {
+const RoomFormDialog = ({ departments, roomToUpdate, setRoomToUpdate }: roomFormProps) => {
   const updateMode = !!roomToUpdate
-
+  const queryClient = useQueryClient()
   const setAlert = useAlert()
 
   const [open, setOpen] = useState(false)
@@ -33,14 +38,14 @@ const RoomFormDialog = ({ roomToUpdate, setRoomToUpdate }: roomFormProps) => {
       size: 0,
     }
   })
-  const { isDirty, defaultValues } = form.formState
+  const { isDirty } = form.formState
 
   useLayoutEffect(() => {
     console.log('effect');
     if (roomToUpdate) {
       form.reset({
         name: roomToUpdate.name,
-        depId: roomToUpdate.departmentId,
+        depId: roomToUpdate.depId,
         size: roomToUpdate.size
       })
       setOpen(true)
@@ -59,24 +64,54 @@ const RoomFormDialog = ({ roomToUpdate, setRoomToUpdate }: roomFormProps) => {
 
 
   const handleClose = () => {
-    console.log(defaultValues);
-
     if (roomToUpdate) {
       setRoomToUpdate(null)
     }
     setOpen(false)
   }
 
-  const handleCreate = () => {
-    //DEMO ALERT
-    setAlert({ text: '(Demo Alert)\n Cannot create room', type: 'error' })
-    handleClose()
+
+
+
+  const { isPending, mutate } = useMutation({
+    mutationFn: ({ room, isUpdate }: { room: any, isUpdate: boolean }) => {
+      if (isUpdate) {
+        return axios.post('/rooms/update', room)
+      } else {
+        return axios.post('/rooms', room)
+      }
+    },
+    onSuccess: () => {
+      setAlert({ text: updateMode ? 'room updated successfully' : 'room created successfully', type: 'success' })
+      queryClient.invalidateQueries({ queryKey: ['departments-and-rooms'] })
+      handleClose()
+    },
+    onError: (error) => {
+      if (isAxiosError(error) && error.response) {
+        setAlert({ text: error.response.data?.msg || 'something went wrong', type: 'error' })
+      }
+    }
+  })
+
+
+  interface handlerProps {
+    name: string,
+    depId: string,
+    size: number,
   }
 
-  const handleUpdate = () => {
+  const handleCreate = ({ name, depId, size }: handlerProps) => {
+    mutate({
+      room: { name, depId, size },
+      isUpdate: false
+    })
+  }
 
-    setAlert({ text: '(Demo Alert)\n Room updated successfully', type: 'success' })
-    handleClose()
+  const handleUpdate = ({ name, size }: handlerProps) => {
+    mutate({
+      room: { _id: roomToUpdate?._id, name, size },
+      isUpdate: true
+    })
   }
 
   return (
@@ -141,9 +176,11 @@ const RoomFormDialog = ({ roomToUpdate, setRoomToUpdate }: roomFormProps) => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="1">Department-1</SelectItem>
-                          <SelectItem value="2">Department-2</SelectItem>
-                          <SelectItem value="3">Department-3</SelectItem>
+                          {
+                            departments.map(dep => (
+                              <SelectItem key={dep._id} value={dep._id}>{dep.name}</SelectItem>
+                            ))
+                          }
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -182,12 +219,12 @@ const RoomFormDialog = ({ roomToUpdate, setRoomToUpdate }: roomFormProps) => {
           </Button>
           {
             updateMode ?
-              <Button disabled={!isDirty} className='rounded-lg' onClick={form.handleSubmit(handleUpdate)}>
-                Update
+              <Button disabled={isPending || !isDirty} className='rounded-lg' onClick={form.handleSubmit(handleUpdate)}>
+                Update {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               </Button>
               :
-              <Button disabled={!isDirty} className='rounded-lg' onClick={form.handleSubmit(handleCreate)}>
-                Create
+              <Button disabled={isPending || !isDirty} className='rounded-lg' onClick={form.handleSubmit(handleCreate)}>
+                Create {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               </Button>
           }
         </DialogFooter>
