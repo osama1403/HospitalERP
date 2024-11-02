@@ -8,7 +8,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { HeartPulse, Pill, PlusIcon, Trash2, UsersRoundIcon } from "lucide-react";
+import { HeartPulse, Loader2, Pill, PlusIcon, Trash2, UsersRoundIcon } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import axiosInstance from "@/api/axios";
+import useAlert from "@/hooks/useAlert";
+import { isAxiosError } from "axios";
+import withAlert from "@/Hoc/withAlert";
 
 export interface emergencyContact {
   name: string;
@@ -17,11 +22,13 @@ export interface emergencyContact {
 }
 
 const PatientRegestration = () => {
+  const setAlert = useAlert()
   const [emergencyContacts, setEmergencyContacts] = useState(false)
   const [medications, setMedications] = useState(false)
-  const [allergiesAndDiseases, setAllergiesAndDiseases] = useState(false)
-  // const [assignRoom, setAssignRoom] = useState(false)
+  const [medicalHistory, setMedicalHistory] = useState(false)
 
+
+  // FORM and form array fields
   const form = useForm({ shouldUnregister: true })
 
   const { fields: emergencyFields, append: emergencyAppend, remove: emergencyRemove } = useFieldArray({
@@ -36,16 +43,44 @@ const PatientRegestration = () => {
     shouldUnregister: true
   });
 
-  const { fields: allergiesAndDiseasesFields, append: allergiesAndDiseasesAppend, remove: allergiesAndDiseasesRemove } = useFieldArray({
+  const { fields: medicalHistoryFields, append: medicalHistoryAppend, remove: medicalHistoryRemove } = useFieldArray({
     control: form.control,
-    name: "allergiesAndDiseases",
+    name: "medicalHistory",
     shouldUnregister: true
   });
 
 
-  const submit = (v: any) => {
-    console.log(v);
+  // react query 
+  const { isPending, mutate } = useMutation({
+    mutationFn: (v: any) => {
+      return axiosInstance.post('/patients', v)
+    },
+    onSuccess: (data) => {
+      setAlert({ text: 'patient registered successfully ', type: 'success' })
+      form.reset()
+    },
+    onError: (error) => {
+      if (isAxiosError(error) && error.response) {
+        setAlert({ text: error.response.data?.msg || 'something went wrong', type: 'error' })
+      }
+    }
+  })
+
+
+  // Registering handler
+
+  const handleRegister = (v: any) => {
+    const patient = {
+      ...v.patient,
+      emergencyContacts: v.emergencyContacts,
+      medications: v.medications,
+      medicalHistory: v.medicalHistory,
+    }
+    mutate({ patient })
   }
+
+
+
 
   return (
     <>
@@ -54,7 +89,7 @@ const PatientRegestration = () => {
         <PageTitle text="Register Patient" />
 
         <Form {...form} >
-          <form onSubmit={form.handleSubmit(submit)} className="max-w-2xl space-y-4 ">
+          <form onSubmit={form.handleSubmit(handleRegister)} className="max-w-2xl space-y-4 ">
             <div >
               <h2 className="text-primary font-normal text-lg mb-2">Patient info</h2>
               <PatientInfo />
@@ -143,23 +178,23 @@ const PatientRegestration = () => {
 
 
 
-            {/* Allergies and chronic diseases */}
+            {/* Medical History */}
             {/* Moving this block into separate component cause unexpected behaviour with useFieldArray and Controller */}
 
             <div>
               <Label className="inline-flex items-center gap-4 cursor-pointer">
-                <Checkbox checked={allergiesAndDiseases} onCheckedChange={(c) => { setAllergiesAndDiseases(c as boolean) }} className="rounded-lg w-4 h-4" />
-                <h2 className={`${allergiesAndDiseases ? 'text-primary' : 'text-muted-foreground'} font-normal text-lg flex gap-2 items-center`}>Allergies and Chronic Diseases <HeartPulse className="w-5 h-5" /></h2>
+                <Checkbox checked={medicalHistory} onCheckedChange={(c) => { setMedicalHistory(c as boolean) }} className="rounded-lg w-4 h-4" />
+                <h2 className={`${medicalHistory ? 'text-primary' : 'text-muted-foreground'} font-normal text-lg flex gap-2 items-center`}>Medical History <HeartPulse className="w-5 h-5" /></h2>
               </Label>
 
-              {allergiesAndDiseases &&
+              {medicalHistory &&
                 <div className="p-4 rounded-lg bg-muted space-y-4">
-                  <Button type="button" className="flex items-center gap-2" size={'sm'} onClick={() => { allergiesAndDiseasesAppend({ name: '', details: '' }) }}>
+                  <Button type="button" className="flex items-center gap-2" size={'sm'} onClick={() => { medicalHistoryAppend({ name: '', details: '' }) }}>
                     <PlusIcon className="w-5 h-5" /> Add
                   </Button>
 
                   {
-                    allergiesAndDiseasesFields.map((field: any, idx: number) => {
+                    medicalHistoryFields.map((field: any, idx: number) => {
 
                       return (
                         <div className="gap-4 relative grid  sm:grid-cols-2 border border-primary/30 rounded-lg p-4" key={field.id}>
@@ -167,7 +202,7 @@ const PatientRegestration = () => {
                           {/* Name */}
                           <FormField
                             control={form.control}
-                            name={`allergiesAndDiseases.${idx}.name` as const}
+                            name={`medicalHistory.${idx}.name` as const}
                             rules={{
                               required: 'this field is required',
                             }}
@@ -186,7 +221,7 @@ const PatientRegestration = () => {
                           {/* Details */}
                           <FormField
                             control={form.control}
-                            name={`allergiesAndDiseases.${idx}.details` as const}
+                            name={`medicalHistory.${idx}.details` as const}
                             defaultValue={''}
                             rules={{
                               required: 'this field is required',
@@ -205,7 +240,7 @@ const PatientRegestration = () => {
                           <div className="flex justify-end items-end sm:col-span-2">
 
                             <Button type="button" variant={'destructive'} className=" text-sm flex gap-2 items-center rounded-lg"
-                              onClick={() => { allergiesAndDiseasesRemove(idx) }}
+                              onClick={() => { medicalHistoryRemove(idx) }}
                             > Remove <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
@@ -317,12 +352,16 @@ const PatientRegestration = () => {
 
             <div className="border-b"></div>
 
-            <Button type="submit" variant={'default'} className="">Register</Button>
+            <Button disabled={isPending} type="submit" variant={'default'}>
+              Register {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+            </Button>
+
           </form>
         </Form>
       </div >
+      
     </>
   );
 }
 
-export default PatientRegestration;
+export default withAlert(PatientRegestration);

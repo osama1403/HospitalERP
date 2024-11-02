@@ -87,12 +87,11 @@ const PatientInfo = () => {
             <FormControl>
               <RadioGroup
                 onValueChange={field.onChange}
-                defaultValue={field.value}
                 className="flex flex-row space-x-3"
               >
                 <FormItem className="flex items-center space-x-1 space-y-0">
                   <FormControl>
-                    <RadioGroupItem value="male" />
+                    <RadioGroupItem value="M" />
                   </FormControl>
                   <FormLabel className="font-normal text-foreground">
                     M
@@ -100,7 +99,7 @@ const PatientInfo = () => {
                 </FormItem>
                 <FormItem className="flex items-center space-x-3 space-y-0">
                   <FormControl>
-                    <RadioGroupItem value="female" />
+                    <RadioGroupItem value="F" />
                   </FormControl>
                   <FormLabel className="font-normal text-foreground">
                     F
