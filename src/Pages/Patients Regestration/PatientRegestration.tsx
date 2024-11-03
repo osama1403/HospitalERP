@@ -52,8 +52,9 @@ const PatientRegestration = () => {
 
   // react query 
   const { isPending, mutate } = useMutation({
-    mutationFn: (v: any) => {
-      return axiosInstance.post('/patients', v)
+    mutationFn: async (v: any) => {
+      const res = await axiosInstance.post('/patients', v)
+      return res.data
     },
     onSuccess: (data) => {
       setAlert({ text: 'patient registered successfully ', type: 'success' })
@@ -359,7 +360,7 @@ const PatientRegestration = () => {
           </form>
         </Form>
       </div >
-      
+
     </>
   );
 }
