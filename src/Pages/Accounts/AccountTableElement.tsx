@@ -15,7 +15,7 @@ const AccountTableElement = ({ account, updateAccount, deleteAccount }: accountT
     <TableRow className="even:bg-muted cursor-pointer hover:bg-primary/25" >
       <TableCell className="font-medium">{account.userName}</TableCell>
       <TableCell>
-        <span className={`px-2 inline-block w-20 text-center text-primary-foreground rounded-md ${account.role === 'DOCTOR' ? 'bg-green-600' : account.role === 'STAFF' ? 'bg-blue-600' : 'bg-zinc-600'}`}>
+        <span className={`px-2 inline-block w-20 text-center text-primary-foreground rounded-md ${account.role === 'DOCTOR' ? 'bg-green-600' : account.role === 'STAFF' ? 'bg-blue-600' :account.role==='NURSE'?'bg-pink-600': 'bg-zinc-600'}`}>
           {account.role}
         </span>
       </TableCell>
