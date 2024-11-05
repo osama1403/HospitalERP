@@ -17,6 +17,7 @@ const StaffFormFields = () => {
         <FormField
           control={control}
           name="staff.name"
+          shouldUnregister={true}
           rules={{
             required: 'this field is required',
             maxLength: {
@@ -40,16 +41,17 @@ const StaffFormFields = () => {
 
         <FormField
           control={control}
-          name="staff.specialty"
+          name="staff.specialization"
+          shouldUnregister={true}
           rules={{
             required: 'this field is required',
           }}
           defaultValue={''}
           render={({ field }: { field: any }) => (
             <FormItem>
-              <FormLabel className='mb-2'>Specialty:</FormLabel>
+              <FormLabel className='mb-2'>Specialization:</FormLabel>
               <FormControl>
-                < Input id='staff-specialty'
+                < Input id='staff-specialization'
                   {...field}
                 />
               </FormControl>

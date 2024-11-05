@@ -9,59 +9,37 @@ import AccountTableElement from "./AccountTableElement";
 import AccountFormDialog from "./AccountFormDialog";
 import withAlert from "@/Hoc/withAlert";
 import AccountDeleteDialog from "./AccountDeleteDialog";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/api/axios";
 
 type RoleSelect = Role | 'All'
 
 export interface account {
-  id: string,
+  _id: string,
   userName: string,
   role: Role,
-  email: string
+  email: string,
+  staffAccount?: { _id: String }
 }
 
-const staffData: account[] = [
-  {
-    id: '1',
-    userName: 'john doe',
-    role: 'DOCTOR',
-    email: 'johndoe@gmail.com'
-  },
-  {
-    id: '2',
-    userName: 'sarah staff',
-    role: 'STAFF',
-    email: 'johndoe@gmail.com'
-  },
-  {
-    id: '3',
-    userName: 'alan admin',
-    role: 'ADMIN',
-    email: 'johndoe@gmail.com'
-  },
-  {
-    id: '4',
-    userName: 'adam doctor',
-    role: 'DOCTOR',
-    email: 'johndoe@gmail.com'
-  },
-  {
-    id: '5',
-    userName: 'Elly staff',
-    role: 'STAFF',
-    email: 'johndoe@gmail.com'
-  },
-]
 
 const Accounts = () => {
-  const [role, setRole] = useState<RoleSelect>('All')
-  const [data, setData] = useState(staffData)
-
   const [accountToUpdate, setAccountToUpdate] = useState<account | null>(null)
   const [accountToDelete, setAccountToDelete] = useState<account | null>(null)
 
+  const [role, setRole] = useState<RoleSelect>('All')
+  // const [data, setData] = useState(staffData)
 
-  const filteredStaff = useMemo(() => {
-    return data.filter(s => role === 'All' ? true : role === s.role)
+  const { data, error, isFetching, refetch } = useQuery({
+    queryKey: ['all-accounts'],
+    queryFn: async () => {
+      const res = await axiosInstance.get('/accounts')
+      return res.data as account[]
+    }
+  })
+
+  const filteredAccounts = useMemo(() => {
+    return data?.filter((s: any) => role === 'All' ? true : role === s.role) || []
   }, [data, role])
 
 
@@ -102,19 +80,19 @@ const Accounts = () => {
           <TableBody>
             {
               // errors 
-              false ?
+              error ?
                 <TableRow className="border-0 bg-transparent hover:bg-transparent">
                   <TableCell colSpan={5} className=" py-5">
                     <div className="flex flex-col gap-3 items-center justify-center">
                       <CircleAlert />
                       <p>Something went wrong</p>
-                      <Button size={'sm'} variant={'outline'}>Retry</Button>
+                      <Button size={'sm'} variant={'outline'} onClick={() => { refetch() }}>Retry</Button>
                     </div>
                   </TableCell>
                 </TableRow>
                 :
                 //  loading
-                false ?
+                isFetching ?
                   <TableRow className="border-0 bg-transparent hover:bg-transparent">
                     <TableCell colSpan={5} className=" py-5">
                       <div className="flex justify-center">
@@ -126,10 +104,10 @@ const Accounts = () => {
 
                   :
 
-                  filteredStaff && (
-                    filteredStaff.length > 0 ?
-                      filteredStaff.map((staff) => (
-                        <AccountTableElement key={staff.id} account={staff} updateAccount={setAccountToUpdate} deleteAccount={setAccountToDelete} />
+                  filteredAccounts && (
+                    filteredAccounts.length > 0 ?
+                      filteredAccounts.map((staff) => (
+                        <AccountTableElement key={staff._id} account={staff} updateAccount={setAccountToUpdate} deleteAccount={setAccountToDelete} />
                       ))
                       :
                       <TableRow className="border-0 bg-transparent hover:bg-transparent">

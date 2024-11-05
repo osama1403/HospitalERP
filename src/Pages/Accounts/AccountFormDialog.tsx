@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/passwordInput";
@@ -10,6 +10,9 @@ import { account } from "./Accounts";
 import StaffFormFields from "./StaffFormFields";
 import { useLayoutEffect, useState } from "react";
 import useAlert from "@/hooks/useAlert";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axiosInstance from "@/api/axios";
+import { isAxiosError } from "axios";
 
 
 
@@ -17,7 +20,6 @@ interface accountFormProps {
   accountToUpdate: account | null;
   setAccountToUpdate: React.Dispatch<React.SetStateAction<account | null>>;
 }
-
 
 const formDefaultValues = {
   userName: '',
@@ -30,11 +32,11 @@ const formDefaultValues = {
 const AccountFormDialog = ({ accountToUpdate, setAccountToUpdate }: accountFormProps) => {
   const updateMode = !!accountToUpdate
   const setAlert = useAlert()
-
+  const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
 
 
-  const form = useForm({
+  const form = useForm<typeof formDefaultValues>({
     mode: 'onChange',
     defaultValues: formDefaultValues
   })
@@ -46,32 +48,68 @@ const AccountFormDialog = ({ accountToUpdate, setAccountToUpdate }: accountFormP
   useLayoutEffect(() => {
     console.log('effect');
     if (accountToUpdate) {
-      form.reset({ ...accountToUpdate })
+      form.reset({
+        userName: accountToUpdate.userName,
+        role: accountToUpdate.role,
+        email: accountToUpdate.email
+      })
       setOpen(true)
     }
   }, [accountToUpdate])
+
+  // CLOSE handler
+  const handleClose = () => {
+    setOpen(false)
+    setAccountToUpdate(null)
+    form.reset(formDefaultValues)
+  }
+
+
+  // mutation
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({ accountData, isUpdate }: { accountData: any, isUpdate: boolean }) => {
+      if (isUpdate) {
+        return axiosInstance.post('/accounts/update', accountData)
+      } else {
+        return axiosInstance.post('/accounts', accountData)
+      }
+    },
+    onSuccess: () => {
+      setAlert({ text: 'account created successfully ', type: 'success' })
+      queryClient.invalidateQueries({ queryKey: ['all-accounts'] })
+      form.reset()
+      handleClose()
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        setAlert({ text: error.response?.data?.msg || error.message || 'something went wrong', type: 'error' })
+      }
+    }
+  })
 
 
   // Handlers
 
   const handleCreate = (v: any) => {
     console.log(v);
-    setAlert({ text: '(Demo Alert)\n Staff Added successfully', type: 'success' })
-    handleClose()
-
+    mutate({
+      accountData: v,
+      isUpdate: false
+    })
   }
 
-  const handleUpdate = () => {
-    //DEMO ALERT
-    setAlert({ text: '(Demo Alert)\n Cannot update staff', type: 'error' })
-    handleClose()
+  const handleUpdate = (v: any) => {
+    console.log(v);
+    mutate({
+      accountData: {
+        _id: accountToUpdate?._id,
+        userName: v.userName,
+        email: v.email
+      },
+      isUpdate: true
+    })
   }
 
-  const handleClose = () => {
-    setOpen(false)
-    setAccountToUpdate(null)
-    form.reset(formDefaultValues)
-  }
 
   return (
 
@@ -216,12 +254,12 @@ const AccountFormDialog = ({ accountToUpdate, setAccountToUpdate }: accountFormP
           </Button>
           {
             updateMode ?
-              <Button disabled={!isDirty} className='rounded-lg' onClick={form.handleSubmit(handleUpdate)}>
-                Update
+              <Button disabled={!isDirty || isPending} className='flex items-center gap-1 rounded-lg' onClick={form.handleSubmit(handleUpdate)}>
+                Update {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               </Button>
               :
-              <Button disabled={!isDirty} className='rounded-lg' onClick={form.handleSubmit(handleCreate)}>
-                Create
+              <Button disabled={!isDirty || isPending} className='flex items-center gap-1 rounded-lg' onClick={form.handleSubmit(handleCreate)}>
+                Create {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               </Button>
           }
         </DialogFooter>
