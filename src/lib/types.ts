@@ -1,1 +1,1 @@
-export type Role = 'ADMIN'|'DOCTOR'|'STAFF'
+export type Role = 'ADMIN'|'DOCTOR'|'NURSE'|'STAFF'
