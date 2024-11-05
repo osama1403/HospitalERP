@@ -3,20 +3,20 @@ import { Input } from "@/components/ui/input";
 
 import { useFormContext } from "react-hook-form";
 
-const DoctorFormFields = () => {
+const StaffFormFields = () => {
   const { control } = useFormContext()
 
   return (
     <div >
       <div className="flex items-center gap-2">
-        <p className="text-lg text-primary">Doctor info:</p>
+        <p className="text-lg text-primary">Staff info:</p>
         <div className="border-t border-muted grow"></div>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4 my-2">
         <FormField
           control={control}
-          name="doctor.name"
+          name="staff.name"
           rules={{
             required: 'this field is required',
             maxLength: {
@@ -26,9 +26,9 @@ const DoctorFormFields = () => {
           defaultValue={''}
           render={({ field }: { field: any }) => (
             <FormItem>
-              <FormLabel className='mb-2'>Dr Name:</FormLabel>
+              <FormLabel className='mb-2'>Name:</FormLabel>
               <FormControl>
-                < Input id='doctor-name'
+                < Input id='staff-name'
                   {...field}
                 />
               </FormControl>
@@ -40,7 +40,7 @@ const DoctorFormFields = () => {
 
         <FormField
           control={control}
-          name="doctor.specialty"
+          name="staff.specialty"
           rules={{
             required: 'this field is required',
           }}
@@ -49,7 +49,7 @@ const DoctorFormFields = () => {
             <FormItem>
               <FormLabel className='mb-2'>Specialty:</FormLabel>
               <FormControl>
-                < Input id='doctor-specialty'
+                < Input id='staff-specialty'
                   {...field}
                 />
               </FormControl>
@@ -64,4 +64,4 @@ const DoctorFormFields = () => {
   );
 }
 
-export default DoctorFormFields;
+export default StaffFormFields;

@@ -6,16 +6,16 @@ import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/passwordInput";
-import { staff } from "./Staff";
-import DoctorFormFields from "./DoctorFormFields";
+import { account } from "./Accounts";
+import StaffFormFields from "./StaffFormFields";
 import { useLayoutEffect, useState } from "react";
 import useAlert from "@/hooks/useAlert";
 
 
 
-interface staffFormProps {
-  staffToUpdate: staff | null;
-  setStaffToUpdate: React.Dispatch<React.SetStateAction<staff | null>>;
+interface accountFormProps {
+  accountToUpdate: account | null;
+  setAccountToUpdate: React.Dispatch<React.SetStateAction<account | null>>;
 }
 
 
@@ -27,8 +27,8 @@ const formDefaultValues = {
 }
 
 
-const StaffFormDialog = ({ staffToUpdate, setStaffToUpdate }: staffFormProps) => {
-  const updateMode = !!staffToUpdate
+const AccountFormDialog = ({ accountToUpdate, setAccountToUpdate }: accountFormProps) => {
+  const updateMode = !!accountToUpdate
   const setAlert = useAlert()
 
   const [open, setOpen] = useState(false)
@@ -45,11 +45,11 @@ const StaffFormDialog = ({ staffToUpdate, setStaffToUpdate }: staffFormProps) =>
 
   useLayoutEffect(() => {
     console.log('effect');
-    if (staffToUpdate) {
-      form.reset({ ...staffToUpdate })
+    if (accountToUpdate) {
+      form.reset({ ...accountToUpdate })
       setOpen(true)
     }
-  }, [staffToUpdate])
+  }, [accountToUpdate])
 
 
   // Handlers
@@ -69,7 +69,7 @@ const StaffFormDialog = ({ staffToUpdate, setStaffToUpdate }: staffFormProps) =>
 
   const handleClose = () => {
     setOpen(false)
-    setStaffToUpdate(null)
+    setAccountToUpdate(null)
     form.reset(formDefaultValues)
   }
 
@@ -91,7 +91,7 @@ const StaffFormDialog = ({ staffToUpdate, setStaffToUpdate }: staffFormProps) =>
           </DialogDescription>
         </DialogHeader>
 
-
+        {/* User Name */}
         <Form {...form}>
           <div className="grid items-center sm:grid-cols-2 gap-4 my-2">
             <FormField
@@ -118,7 +118,7 @@ const StaffFormDialog = ({ staffToUpdate, setStaffToUpdate }: staffFormProps) =>
               )}
             />
 
-
+            {/* ROLE */}
             <FormField
               control={form.control}
               name='role'
@@ -138,6 +138,7 @@ const StaffFormDialog = ({ staffToUpdate, setStaffToUpdate }: staffFormProps) =>
                     <SelectContent>
                       <SelectItem value="ADMIN">Admin</SelectItem>
                       <SelectItem value="DOCTOR">Doctor</SelectItem>
+                      <SelectItem value="NURSE">Nurse</SelectItem>
                       <SelectItem value="STAFF">Staff</SelectItem>
                     </SelectContent>
                   </Select>
@@ -147,7 +148,7 @@ const StaffFormDialog = ({ staffToUpdate, setStaffToUpdate }: staffFormProps) =>
               }
             />
 
-
+            {/* Email */}
             <FormField
               control={form.control}
               name='email'
@@ -170,6 +171,7 @@ const StaffFormDialog = ({ staffToUpdate, setStaffToUpdate }: staffFormProps) =>
               )}
             />
 
+            {/* Password */}
             {
               updateMode ?
                 <Button variant={'link'} className="mt-6">reset password</Button>
@@ -200,8 +202,8 @@ const StaffFormDialog = ({ staffToUpdate, setStaffToUpdate }: staffFormProps) =>
           </div>
 
           {
-            selectedRole === 'DOCTOR' && !updateMode &&
-            <DoctorFormFields />
+            (selectedRole === 'DOCTOR' || selectedRole === 'NURSE') && !updateMode &&
+            <StaffFormFields />
           }
 
 
@@ -229,4 +231,4 @@ const StaffFormDialog = ({ staffToUpdate, setStaffToUpdate }: staffFormProps) =>
   );
 }
 
-export default StaffFormDialog;
+export default AccountFormDialog;

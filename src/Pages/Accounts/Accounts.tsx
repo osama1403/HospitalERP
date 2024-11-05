@@ -5,21 +5,21 @@ import { Role } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { CircleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import StaffTableElement from "./StaffTableElement";
-import StaffFormDialog from "./StaffFormDialog";
+import AccountTableElement from "./AccountTableElement";
+import AccountFormDialog from "./AccountFormDialog";
 import withAlert from "@/Hoc/withAlert";
-import StaffDeleteDialog from "./StaffDeleteDialog";
+import AccountDeleteDialog from "./AccountDeleteDialog";
 
 type RoleSelect = Role | 'All'
 
-export interface staff {
+export interface account {
   id: string,
   userName: string,
   role: Role,
   email: string
 }
 
-const staffData: staff[] = [
+const staffData: account[] = [
   {
     id: '1',
     userName: 'john doe',
@@ -52,12 +52,12 @@ const staffData: staff[] = [
   },
 ]
 
-const Staff = () => {
+const Accounts = () => {
   const [role, setRole] = useState<RoleSelect>('All')
   const [data, setData] = useState(staffData)
 
-  const [staffToUpdate, setStaffToUpdate] = useState<staff | null>(null)
-  const [staffToDelete, setStaffToDelete] = useState<staff | null>(null)
+  const [accountToUpdate, setAccountToUpdate] = useState<account | null>(null)
+  const [accountToDelete, setAccountToDelete] = useState<account | null>(null)
 
 
   const filteredStaff = useMemo(() => {
@@ -67,7 +67,7 @@ const Staff = () => {
 
   return (
     <div className="px-4 py-6">
-      <PageTitle text="Staff" />
+      <PageTitle text="Accounts" />
       <div className="max-w-4xl w-full ">
 
         <div className="my-7 flex justify-between">
@@ -80,12 +80,13 @@ const Staff = () => {
               <SelectItem value="All">All</SelectItem>
               <SelectItem value="ADMIN">Admin</SelectItem>
               <SelectItem value="DOCTOR">Doctor</SelectItem>
+              <SelectItem value="NURSE">Nurse</SelectItem>
               <SelectItem value="STAFF">Staff</SelectItem>
             </SelectContent>
           </Select>
 
           {/* Account Form */}
-          <StaffFormDialog staffToUpdate={staffToUpdate} setStaffToUpdate={setStaffToUpdate} />
+          <AccountFormDialog accountToUpdate={accountToUpdate} setAccountToUpdate={setAccountToUpdate} />
         </div>
 
         <Table className="max-w-4xl w-full min-w-[500px]">
@@ -128,12 +129,12 @@ const Staff = () => {
                   filteredStaff && (
                     filteredStaff.length > 0 ?
                       filteredStaff.map((staff) => (
-                        <StaffTableElement key={staff.id} staff={staff} updateStaff={setStaffToUpdate} deleteStaff={setStaffToDelete} />
+                        <AccountTableElement key={staff.id} account={staff} updateAccount={setAccountToUpdate} deleteAccount={setAccountToDelete} />
                       ))
                       :
                       <TableRow className="border-0 bg-transparent hover:bg-transparent">
                         <TableCell colSpan={5} className="text-center text-lg text-muted-foreground ">
-                          no staff found
+                          no accounts found
                         </TableCell>
                       </TableRow>
                   )
@@ -142,11 +143,11 @@ const Staff = () => {
         </Table>
       </div>
 
-      <StaffDeleteDialog staffToDelete={staffToDelete} setStaffToDelete={setStaffToDelete} />
+      <AccountDeleteDialog accountToDelete={accountToDelete} setAccountToDelete={setAccountToDelete} />
 
     </div >
   );
 }
 
-export default withAlert(Staff);
+export default withAlert(Accounts);
 
