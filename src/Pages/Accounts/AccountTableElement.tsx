@@ -14,12 +14,12 @@ const AccountTableElement = ({ account, updateAccount, deleteAccount }: accountT
   return (
     <TableRow className="even:bg-muted cursor-pointer hover:bg-primary/25" >
       <TableCell className="font-medium">{account.userName}</TableCell>
-      <TableCell>
+      <TableCell className="max-w-20">
         <span className={`px-2 inline-block w-20 text-center text-primary-foreground rounded-md ${account.role === 'DOCTOR' ? 'bg-green-600' : account.role === 'STAFF' ? 'bg-blue-600' :account.role==='NURSE'?'bg-pink-600': 'bg-zinc-600'}`}>
           {account.role}
         </span>
       </TableCell>
-      <TableCell>{account.email}</TableCell>
+      <TableCell className="max-w-40 break-all">{account.email}</TableCell>
       <TableCell>
         <div className="flex items-center gap-1">
           <Button size={"icon"} variant={'outline'} onClick={() => { updateAccount(account) }}
