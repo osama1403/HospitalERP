@@ -10,47 +10,62 @@ import useDebounce from "@/hooks/useDebounce";
 
 
 
-interface doctor {
-  id: number;
+interface staff {
+  _id: number;
   name: string;
-  speciality: string;
+  specialization: string;
+  account: { 
+    role: 'DOCTOR' | 'NURSE'
+   }
 }
 
-const demoDoctors: doctor[] = [
+const demoStaff: staff[] = [
   {
-    id: 1,
+    _id: 1,
     name: 'john snow',
-    speciality: 'spec1'
+    specialization: 'spec1',
+    account:{
+      role:'DOCTOR',
+    }
   },
   {
-    id: 2,
+    _id: 2,
     name: 'walter white',
-    speciality: 'spec1'
+    specialization: 'spec1',
+    account:{
+      role:'DOCTOR',
+    }
   },
   {
-    id: 3,
+    _id: 3,
     name: 'johny syndako',
-    speciality: 'spec1'
+    specialization: 'spec1',
+    account:{
+      role:'DOCTOR',
+    }
   },
   {
-    id: 4,
+    _id: 4,
     name: 'lina mark',
-    speciality: 'spec1'
+    specialization: 'spec1',
+    account:{
+      role:'NURSE',
+    }
   },
 
 ]
 
 
-const Doctors = () => {
+const Staff = () => {
 
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce<string>(search, 500)
-  const [data, setData] = useState(demoDoctors)
+  const [data, setData] = useState(demoStaff)
 
 
 
   // filtering
-  const filteredDoctors = useMemo(() => {
+  const filteredStaff = useMemo(() => {
     if (data) {
       return data.filter(el => (el.name).toLowerCase().includes(debouncedSearch.toLowerCase()))
     }
@@ -59,7 +74,7 @@ const Doctors = () => {
 
   return (
     <div className="px-4 py-6">
-      <PageTitle text="Doctors" />
+      <PageTitle text="Staff" />
       <div className="flex items-center gap-3 mb-4">
         <Search className="w-6 h-6 text-muted-foreground" />
         <Input placeholder="search" value={search} onChange={(e) => { setSearch(e.target.value) }} className="max-w-72" />
@@ -70,7 +85,8 @@ const Doctors = () => {
         <TableHeader>
           <TableRow className="bg-primary hover:bg-primary">
             <TableHead className="text-primary-foreground">Name</TableHead>
-            <TableHead className="text-primary-foreground">Speciality</TableHead>
+            <TableHead className="text-primary-foreground">Role</TableHead>
+            <TableHead className="text-primary-foreground">Specialization</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -79,7 +95,7 @@ const Doctors = () => {
             // errors 
             false ?
               <TableRow className="border-0 bg-transparent hover:bg-transparent">
-                <TableCell colSpan={2} className=" py-5">
+                <TableCell colSpan={3} className=" py-5">
                   <div className="flex flex-col gap-3 items-center justify-center">
                     <CircleAlert />
                     <p>Something went wrong</p>
@@ -91,7 +107,7 @@ const Doctors = () => {
               //  loading
               false ?
                 <TableRow className="border-0 bg-transparent hover:bg-transparent">
-                  <TableCell colSpan={2} className=" py-5">
+                  <TableCell colSpan={3} className=" py-5">
                     <div className="flex justify-center">
                       <div className="w-12 h-12 rounded-full border-[6px] border-muted border-t-primary animate-spin " >
                       </div>
@@ -101,15 +117,15 @@ const Doctors = () => {
 
                 :
 
-                filteredDoctors && (
-                  filteredDoctors.length > 0 ?
-                    filteredDoctors.map((doctor) => (
-                      <DoctorsTableElement key={doctor.id} doctor={doctor} />
+                filteredStaff && (
+                  filteredStaff.length > 0 ?
+                    filteredStaff.map((staff) => (
+                      <StaffTableElement key={staff._id} staff={staff} />
                     ))
                     :
                     <TableRow className="border-0 bg-transparent hover:bg-transparent">
                       <TableCell colSpan={5} className="text-center text-lg text-muted-foreground ">
-                        no doctors found
+                        no staff found
                       </TableCell>
                     </TableRow>
                 )
@@ -121,18 +137,19 @@ const Doctors = () => {
   );
 }
 
-export default Doctors;
+export default Staff;
 
 
-const DoctorsTableElement = ({ doctor }: { doctor: doctor }) => {
+const StaffTableElement = ({ staff }: { staff: staff }) => {
   const handleClick = (id: number) => {
     console.log(id);
   }
 
   return (
-    <TableRow className="even:bg-muted cursor-pointer hover:bg-primary/25" onClick={() => { handleClick(doctor.id) }}>
-      <TableCell className="font-medium">{doctor.name}</TableCell>
-      <TableCell className="font-medium">{doctor.speciality}</TableCell>
+    <TableRow className="even:bg-muted cursor-pointer hover:bg-primary/25" onClick={() => { handleClick(staff._id) }}>
+      <TableCell className="font-medium">{staff.name}</TableCell>
+      <TableCell className="font-medium">{staff.account.role}</TableCell>
+      <TableCell className="font-medium">{staff.specialization}</TableCell>
 
     </TableRow>
   )

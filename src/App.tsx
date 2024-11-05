@@ -6,7 +6,7 @@ import Departments from './Pages/Departments/Departments'
 import PatientRegestration from './Pages/Patients Regestration/PatientRegestration'
 import Admissions from './Pages/Admissions/Admissions'
 import Accounts from './Pages/Accounts/Accounts'
-import Doctors from './Pages/Doctors/Doctors'
+import Staff from './Pages/Staff/Staff'
 import PatientProfile from './Pages/PatientProfile/PatientProfile'
 
 function App() {
@@ -21,7 +21,7 @@ function App() {
           <Route path='/login' element={<Login/>} />
           <Route path='/admissions' element={<Admissions/>} />
           <Route path='/accounts' element={<Accounts/>} />
-          <Route path='/doctors' element={<Doctors/>} />
+          <Route path='/staff' element={<Staff/>} />
           <Route path='/patient' element={<PatientProfile/>} />
         </Route>
       </Routes>
