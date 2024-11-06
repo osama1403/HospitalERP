@@ -5,6 +5,8 @@ import { CircleAlert, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import useDebounce from "@/hooks/useDebounce";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/api/axios";
 
 
 
@@ -14,9 +16,9 @@ interface staff {
   _id: number;
   name: string;
   specialization: string;
-  account: { 
+  account: {
     role: 'DOCTOR' | 'NURSE'
-   }
+  }
 }
 
 const demoStaff: staff[] = [
@@ -24,32 +26,32 @@ const demoStaff: staff[] = [
     _id: 1,
     name: 'john snow',
     specialization: 'spec1',
-    account:{
-      role:'DOCTOR',
+    account: {
+      role: 'DOCTOR',
     }
   },
   {
     _id: 2,
     name: 'walter white',
     specialization: 'spec1',
-    account:{
-      role:'DOCTOR',
+    account: {
+      role: 'DOCTOR',
     }
   },
   {
     _id: 3,
     name: 'johny syndako',
     specialization: 'spec1',
-    account:{
-      role:'DOCTOR',
+    account: {
+      role: 'DOCTOR',
     }
   },
   {
     _id: 4,
     name: 'lina mark',
     specialization: 'spec1',
-    account:{
-      role:'NURSE',
+    account: {
+      role: 'NURSE',
     }
   },
 
@@ -60,7 +62,14 @@ const Staff = () => {
 
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce<string>(search, 500)
-  const [data, setData] = useState(demoStaff)
+
+  const { data, error, isFetching, refetch } = useQuery({
+    queryKey: ['all-staff'],
+    queryFn: async () => {
+      const res = await axiosInstance.get('/staff')
+      return res.data as staff[]
+    }
+  })
 
 
 
@@ -71,6 +80,8 @@ const Staff = () => {
     }
     return null
   }, [debouncedSearch, data])
+
+
 
   return (
     <div className="px-4 py-6">
@@ -93,19 +104,19 @@ const Staff = () => {
         <TableBody>
           {
             // errors 
-            false ?
+            error ?
               <TableRow className="border-0 bg-transparent hover:bg-transparent">
                 <TableCell colSpan={3} className=" py-5">
                   <div className="flex flex-col gap-3 items-center justify-center">
                     <CircleAlert />
                     <p>Something went wrong</p>
-                    <Button size={'sm'} variant={'outline'}>Retry</Button>
+                    <Button size={'sm'} variant={'outline'} onClick={() => { refetch() }}>Retry</Button>
                   </div>
                 </TableCell>
               </TableRow>
               :
               //  loading
-              false ?
+              isFetching ?
                 <TableRow className="border-0 bg-transparent hover:bg-transparent">
                   <TableCell colSpan={3} className=" py-5">
                     <div className="flex justify-center">
