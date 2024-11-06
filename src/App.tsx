@@ -8,6 +8,7 @@ import Admissions from './Pages/Admissions/Admissions'
 import Accounts from './Pages/Accounts/Accounts'
 import Staff from './Pages/Staff/Staff'
 import PatientProfile from './Pages/PatientProfile/PatientProfile'
+import Patients from './Pages/Patients/Patients'
 
 function App() {
   return (
@@ -22,7 +23,8 @@ function App() {
           <Route path='/admissions' element={<Admissions/>} />
           <Route path='/accounts' element={<Accounts/>} />
           <Route path='/staff' element={<Staff/>} />
-          <Route path='/patient' element={<PatientProfile/>} />
+          <Route path='/patients' element={<Patients/>} />
+          <Route path='/patients/:id' element={<PatientProfile/>} />
         </Route>
       </Routes>
 

@@ -49,10 +49,10 @@ const links = {
     to: '/staff',
     text: 'Staff'
   },
-  patient: {
+  patients: {
     icon: Heart,
-    to: '/patient',
-    text: 'Patient'
+    to: '/patients',
+    text: 'Patients'
   }
 }
 
@@ -63,7 +63,7 @@ export const getLinksForRole = (role: string): navigationLink[] => {
   let result: navigationLink[] = []
   switch (role) {
     case 'ADMIN': {
-      result = [links.home, links.departments, links.register, links.accounts, links.admissions, links.staff,links.patient]
+      result = [links.home, links.departments, links.register, links.accounts, links.admissions, links.staff,links.patients]
     }
   }
   return result
