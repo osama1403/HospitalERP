@@ -1,7 +1,7 @@
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { medicalHistory } from "./MedicalHistory"
 import { useCallback } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/api/axios";
 import { useParams } from "react-router-dom";
 import useAlert from "@/hooks/useAlert";
@@ -16,6 +16,7 @@ interface medicalHistoryDeleteDialogProps {
 const MedicalHistoryDeleteDialog = ({ medicalHistoryToDelete, setMedicalHistoryToDelete }: medicalHistoryDeleteDialogProps) => {
   const setAlert = useAlert()
   const { id } = useParams()
+  const queryClient = useQueryClient()
 
   const { mutate, isPending } = useMutation({
     mutationKey: ['delete-med', medicalHistoryToDelete?._id],
@@ -23,6 +24,8 @@ const MedicalHistoryDeleteDialog = ({ medicalHistoryToDelete, setMedicalHistoryT
       return axiosInstance.post('/patients/update/delete-medical-history', v)
     }, onSuccess: () => {
       setAlert({ text: 'medical history deleted successfully ', type: 'success' })
+      queryClient.invalidateQueries({queryKey:['patient', id]})
+
       setMedicalHistoryToDelete(null)
     },
     onError: (error) => {

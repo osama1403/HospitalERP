@@ -7,7 +7,7 @@ import { medication } from "./Medications"
 import { useForm } from "react-hook-form";
 import { useLayoutEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/api/axios";
 import { isAxiosError } from "axios";
 import { Loader2 } from "lucide-react";
@@ -29,7 +29,7 @@ const MedicationFormDialog = ({ medicationToUpdate, setMedicationToUpdate, open,
   const { id } = useParams()
   const updateMode = !!medicationToUpdate
   const setAlert = useAlert()
-
+  const queryClient = useQueryClient()
   const form = useForm({
     mode: 'onChange',
     defaultValues: formDefaultValues
@@ -48,7 +48,7 @@ const MedicationFormDialog = ({ medicationToUpdate, setMedicationToUpdate, open,
 
 
   const { mutate, isPending } = useMutation({
-    mutationFn: ({ v, isUpdate }: { v: medication, isUpdate: boolean }) => {        
+    mutationFn: ({ v, isUpdate }: { v: medication, isUpdate: boolean }) => {
       if (isUpdate) {
         return axiosInstance.post('/patients/update/update-med', v)
       } else {
@@ -56,6 +56,8 @@ const MedicationFormDialog = ({ medicationToUpdate, setMedicationToUpdate, open,
       }
     }, onSuccess: (res) => {
       setAlert({ text: res.data.msg, type: 'success' })
+      queryClient.invalidateQueries({ queryKey: ['patient', id] })
+
       handleClose()
     },
     onError: (error) => {

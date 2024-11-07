@@ -1,7 +1,7 @@
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { medication } from "./Medications"
 import { useCallback } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/api/axios";
 import { useParams } from "react-router-dom";
 import useAlert from "@/hooks/useAlert";
@@ -16,6 +16,7 @@ interface medicationDeleteDialogProps {
 const MedicationDeleteDialog = ({ medicationToDelete, setMedicationToDelete }: medicationDeleteDialogProps) => {
   const setAlert = useAlert()
   const { id } = useParams()
+  const queryClient = useQueryClient()
 
   const { mutate, isPending } = useMutation({
     mutationKey: ['delete-med', medicationToDelete?._id],
@@ -24,6 +25,7 @@ const MedicationDeleteDialog = ({ medicationToDelete, setMedicationToDelete }: m
     }, onSuccess: () => {
       setAlert({ text: 'medication deleted successfully ', type: 'success' })
       setMedicationToDelete(null)
+      queryClient.invalidateQueries({queryKey:['patient', id]})
     },
     onError: (error) => {
       if (isAxiosError(error) && error.response) {

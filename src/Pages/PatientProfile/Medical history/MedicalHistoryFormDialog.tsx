@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { useLayoutEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { useParams } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/api/axios";
 import { isAxiosError } from "axios";
 import { Loader2 } from "lucide-react";
@@ -28,6 +28,7 @@ const MedicalHistoryFormDialog = ({ medicalHistoryToUpdate, setMedicalHistoryToU
   const updateMode = !!medicalHistoryToUpdate
   const setAlert = useAlert()
   const { id } = useParams()
+  const queryClient = useQueryClient()
 
   const form = useForm({
     mode: 'onChange',
@@ -54,6 +55,7 @@ const MedicalHistoryFormDialog = ({ medicalHistoryToUpdate, setMedicalHistoryToU
       }
     }, onSuccess: (res) => {
       setAlert({ text: res.data.msg, type: 'success' })
+      queryClient.invalidateQueries({queryKey:['patient', id]})
       handleClose()
     },
     onError: (error) => {
