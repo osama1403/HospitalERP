@@ -16,6 +16,9 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/api/axios";
 import PageLoader from "@/components/PageLoader";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import AdmissionDialog from "./Admission Dialog/AdmissionDialog";
 
 
 
@@ -58,7 +61,11 @@ const PatientProfile = () => {
       <div className="px-4 py-6">
 
         <div className="p-4 rounded-xl bg-muted">
-          <p className="text-primary text-3xl mb-4">Patient: {`${data.firstName} ${data.lastName}`}</p>
+          <p className="text-primary text-3xl mb-2">Patient: {`${data.firstName} ${data.lastName}`}</p>
+          {
+            !activeAdmissionId &&
+            <AdmissionDialog id={id!}/>
+          }
           <div className="max-w-3xl">
             <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2  ">
               <p><span className="text-primary mr-2">First name: </span>{data.firstName}</p>
@@ -113,7 +120,7 @@ const PatientProfile = () => {
 
                 data.admissions?.length > 0 ?
                   data.admissions.map((admission: Admission) => (
-                    <TableRow className="even:bg-muted cursor-pointer hover:bg-primary/25" onClick={() => { }}>
+                    <TableRow key={admission._id} className="even:bg-muted cursor-pointer hover:bg-primary/25" onClick={() => { }}>
                       <TableCell>{format(admission.date, 'PPpp')}</TableCell>
                       <TableCell>{
                         admission.dischargeDate ?

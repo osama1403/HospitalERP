@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { getComparator } from "@/lib/utils";
 import AdmissionTableElement from "./AdmissionTableElement";
 import useDebounce from "@/hooks/useDebounce";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/api/axios";
 
 type order = 'desc' | 'asc'
 type sortableFields = 'date' | 'age'
@@ -24,41 +26,14 @@ const d = new Date()
 
 
 export interface Admission {
-  id: string,
+  _id: string,
+  patientId: string,
+  age:number,
   name: string,
-  age: number,
   date: Date,
   department: string,
   room: string
 }
-const admisssionsData: Admission[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    age: 26,
-    date: sub(d, { days: 2 }),
-    department: 'ICU',
-    room: 'room 13'
-  },
-  {
-    id: '2',
-    name: 'Mike Syndako',
-    age: 43,
-    date: d,
-    department: 'Surgery',
-    room: '2'
-  },
-  {
-    id: '3',
-    name: 'Sarah Maria',
-    age: 28,
-    date: sub(d, { days: 3 }),
-    department: 'Private',
-    room: '24'
-  },
-
-]
-
 
 
 
@@ -68,10 +43,23 @@ const Admissions = () => {
   // State
   const [order, setOrder] = useState<order>('desc');
   const [orderBy, setOrderBy] = useState<sortableFields>('date');
-  const [data, setData] = useState(admisssionsData)
 
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce<string>(search, 500)
+
+
+
+  const { data, isFetching, error, refetch } = useQuery({
+    queryKey: ['active-admissions'],
+    queryFn: async () => {
+      const res = await axiosInstance.get('/admission')
+      return res.data
+    }
+  })
+
+
+
+
 
   const handleRequestSort = (property: sortableFields) => {
     const isDesc = orderBy === property && order === 'desc';
@@ -79,11 +67,10 @@ const Admissions = () => {
     setOrderBy(property);
   };
 
-
   // filtering
   const filteredData = useMemo(() => {
     if (data) {
-      return data.filter(el => (el.name).toLowerCase().includes(debouncedSearch.toLowerCase()))
+      return data.filter((el: Admission) => (el.name).toLowerCase().includes(debouncedSearch.toLowerCase()))
     }
     return null
   }, [debouncedSearch, data])
@@ -133,30 +120,33 @@ const Admissions = () => {
 
           <TableBody>
             {
-              // errors 
-              false ?
+              //  loading
+              isFetching ?
                 <TableRow className="border-0 bg-transparent hover:bg-transparent">
                   <TableCell colSpan={5} className=" py-5">
-                    <div className="flex flex-col gap-3 items-center justify-center">
-                      <CircleAlert/>
-                      <p>Something went wrong</p>
-                      <Button size={'sm'} variant={'outline'}>Retry</Button>
+                    <div className="flex justify-center">
+                      <div className="w-12 h-12 rounded-full border-[6px] border-muted border-t-primary animate-spin " >
+                      </div>
                     </div>
                   </TableCell>
                 </TableRow>
+
                 :
-                //  loading
-                false ?
+
+                // errors 
+                error ?
                   <TableRow className="border-0 bg-transparent hover:bg-transparent">
                     <TableCell colSpan={5} className=" py-5">
-                      <div className="flex justify-center">
-                        <div className="w-12 h-12 rounded-full border-[6px] border-muted border-t-primary animate-spin " >
-                        </div>
+                      <div className="flex flex-col gap-3 items-center justify-center">
+                        <CircleAlert />
+                        <p>Something went wrong</p>
+                        <Button size={'sm'} variant={'outline'} onClick={() => { refetch() }}>Retry</Button>
                       </div>
                     </TableCell>
                   </TableRow>
-
                   :
+
+
 
                   sortedAdmissions && (
                     sortedAdmissions.length > 0 ?

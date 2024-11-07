@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/api/axios";
@@ -22,7 +22,7 @@ interface note {
 
 
 
-const NoteDialog = ({id}:{id:string}) => {
+const NoteDialog = ({ id }: { id: string }) => {
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const setAlert = useAlert()
@@ -38,11 +38,13 @@ const NoteDialog = ({id}:{id:string}) => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: ({ v }: { v: note }) => {
+      console.log(v);
+
       return axiosInstance.post('/admission/update/add-note', v)
     },
     onSuccess: (res) => {
       setAlert({ text: res.data.msg, type: 'success' })
-      queryClient.invalidateQueries({queryKey:['active-admission']})
+      queryClient.invalidateQueries({ queryKey: ['active-admission'] })
       handleClose()
     },
     onError: (error) => {
@@ -55,7 +57,11 @@ const NoteDialog = ({id}:{id:string}) => {
 
 
   const handleSubmitNote = (v: any) => {
-    mutate({...v,id})
+    mutate({
+      v: {
+        ...v, id
+      }
+    })
   }
 
   const handleClose = () => {
@@ -129,8 +135,8 @@ const NoteDialog = ({id}:{id:string}) => {
             Close
           </Button>
 
-          <Button disabled={!isDirty||isPending} className='rounded-lg' onClick={form.handleSubmit(handleSubmitNote)}>
-            Create
+          <Button disabled={!isDirty || isPending} className='flex items-center gap-1 rounded-lg' onClick={form.handleSubmit(handleSubmitNote)}>
+            Create {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
           </Button>
 
         </DialogFooter>

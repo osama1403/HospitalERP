@@ -10,8 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 export interface room {
   _id: string;
   name: string;
-  depName: string;
-  depId: number;
+  depId: any;
   size: number;
   occupied: number;
 }
@@ -54,7 +53,9 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
         return availableRooms
       } else {
         return availableRooms.filter((room: any) => {
-          return String(room.depId) === filterDepartment
+
+
+          return room.depId._id === filterDepartment
         })
       }
     }
@@ -77,30 +78,11 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
     handleClose()
   }
 
-  if (isFetching) {
-    return (
-      <div className="min-h-44 flex justify-center">
-       <Loader2 className="w-6 h-6 animate-spin"/>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex min-h-44 flex-col gap-3 items-center justify-center">
-        <CircleAlert />
-        <p>Something went wrong</p>
-        <Button size={'sm'} variant={'outline'} onClick={() => { refetch() }}>Retry</Button>
-      </div>
-    )
-  }
-
-
 
   return (
     <Dialog open={open} onOpenChange={(open) => { if (open) { setOpen(open); refetch(); } else { handleClose() } }}>
       <DialogTrigger asChild>
-        <Button className="rounded-lg px-3 py-1">
+        <Button size={'sm'} className="rounded-lg px-3 py-1">
           Select Room
         </Button>
       </DialogTrigger>
@@ -114,41 +96,59 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
         </DialogHeader>
 
 
-        <p>selected room:{selectedRoom?.name}</p>
-        <div className="max-w-fit min-w-[200px]">
 
-          {/* FILTER BY DEPARTMENT */}
-          <Select defaultValue={filterDepartment} onValueChange={(v) => { setFilterDepartment(v); setSelectedRoom(null) }}>
-            <SelectTrigger id='room-dep' className="">
-              <SelectValue placeholder="Select Department" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All">All</SelectItem>
-              {
-                availableDepartments.map((el: any) => (
-                  <SelectItem value={String(el._id)}>{el.name}</SelectItem>
-                ))
-              }
-            </SelectContent>
-          </Select>
-        </div>
+        {
+          isFetching ?
+            <div className="min-h-44 flex justify-center">
+              <Loader2 className="w-6 h-6 animate-spin" />
+            </div>
+            : error ?
+              <div className="flex min-h-44 flex-col gap-3 items-center justify-center">
+                <CircleAlert />
+                <p>Something went wrong</p>
+                <Button size={'sm'} variant={'outline'} onClick={() => { refetch() }}>Retry</Button>
+              </div> :
+              <>
 
-        <div className="max-h-96 scrollbar-hide overflow-auto">
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
-            {
-              filteredRooms?.length > 0 &&
-              filteredRooms?.map((room: any) => (
-                <div key={room._id} className={`p-3 rounded-xl border border-primary/15  cursor-pointer ${selectedRoom?._id === room._id ? 'bg-green-500/25' : 'bg-muted hover:bg-primary/15'}`}
-                  onClick={() => { setSelectedRoom(room) }}>
-                  <p className="text-sm text-primary">{room.depName}</p>
-                  <p className="text-lg">{room.name}</p>
-                  <p>size: {room.size}</p>
-                  <p>free: {room.size - room.occupied}</p>
+
+                <p>selected room:{selectedRoom?.name}</p>
+                <div className="max-w-fit min-w-[200px]">
+
+                  {/* FILTER BY DEPARTMENT */}
+                  <Select defaultValue={filterDepartment} onValueChange={(v) => { setFilterDepartment(v); setSelectedRoom(null) }}>
+                    <SelectTrigger id='room-dep' className="">
+                      <SelectValue placeholder="Select Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="All">All</SelectItem>
+                      {
+                        availableDepartments.map((el: any) => (
+                          <SelectItem key={el._id} value={String(el._id)}>{el.name}</SelectItem>
+                        ))
+                      }
+                    </SelectContent>
+                  </Select>
                 </div>
-              ))
-            }
-          </div>
-        </div>
+
+                <div className="max-h-96 scrollbar-hide overflow-auto">
+                  <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
+                    {
+                      filteredRooms?.length > 0 &&
+                      filteredRooms?.map((room: any) => (
+                        <div key={room._id} className={`p-3 rounded-xl border border-primary/15  cursor-pointer ${selectedRoom?._id === room._id ? 'bg-green-500/25' : 'bg-muted hover:bg-primary/15'}`}
+                          onClick={() => { setSelectedRoom(room) }}>
+                          <p className="text-sm text-primary">{room.depName}</p>
+                          <p className="text-lg">{room.name}</p>
+                          <p>size: {room.size}</p>
+                          <p>free: {room.size - room.occupied}</p>
+                        </div>
+                      ))
+                    }
+                  </div>
+                </div>
+              </>
+
+        }
 
 
 
