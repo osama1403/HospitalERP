@@ -34,15 +34,13 @@ const Patients = () => {
     }
   })
 
-
-
-  // // filtering
-  // const filteredPatient = useMemo(() => {
-  //   if (data) {
-  //     return data.filter(el => (el.name).toLowerCase().includes(debouncedSearch.toLowerCase()))
-  //   }
-  //   return null
-  // }, [debouncedSearch, data])
+  // filtering
+  const filteredPatient = useMemo(() => {
+    if (data) {
+      return data.filter(el => (el.firstName+' '+el.lastName).toLowerCase().includes(debouncedSearch.toLowerCase()))
+    }
+    return null
+  }, [debouncedSearch, data])
 
   console.log(data);
 
@@ -93,9 +91,9 @@ const Patients = () => {
 
                 :
 
-                data && (
-                  data.length > 0 ?
-                    data.map((patient) => (
+                filteredPatient && (
+                  filteredPatient.length > 0 ?
+                    filteredPatient.map((patient) => (
                       <PatientsTableElement key={patient._id} patient={patient} />
                     ))
                     :
