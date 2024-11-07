@@ -10,7 +10,7 @@ const MobileSideBar = () => {
   const links = getLinksForRole('ADMIN')
 
   return (
-    <header className="md:hidden sticky top-0 flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+    <header className="md:hidden sticky top-0 flex h-14 items-center gap-4 border-b bg-muted px-4 lg:h-[60px] lg:px-6">
       {/* <header className="sticky top-0 flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6"> */}
       <Sheet>
         <SheetTrigger asChild>

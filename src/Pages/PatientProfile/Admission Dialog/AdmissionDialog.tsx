@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/api/axios";
@@ -137,7 +137,7 @@ const AdmissionDialog = ({ id }: { id: string }) => {
           </Button>
 
           <Button disabled={!cause || !selectedRoom || isPending} className='rounded-lg' onClick={handleSubmit}>
-            Create
+            Create {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
           </Button>
 
         </DialogFooter>

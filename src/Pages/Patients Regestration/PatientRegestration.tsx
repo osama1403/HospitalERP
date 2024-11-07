@@ -144,7 +144,7 @@ const PatientRegestration = () => {
                           {/* Details */}
                           <FormField
                             control={form.control}
-                            name={`medications.${idx}.details` as const}
+                            name={`medications.${idx}.description` as const}
                             defaultValue={''}
                             rules={{
                               required: 'this field is required',
@@ -222,7 +222,7 @@ const PatientRegestration = () => {
                           {/* Details */}
                           <FormField
                             control={form.control}
-                            name={`medicalHistory.${idx}.details` as const}
+                            name={`medicalHistory.${idx}.description` as const}
                             defaultValue={''}
                             rules={{
                               required: 'this field is required',

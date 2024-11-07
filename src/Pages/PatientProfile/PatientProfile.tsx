@@ -66,7 +66,7 @@ const PatientProfile = () => {
             !activeAdmissionId &&
             <AdmissionDialog id={id!}/>
           }
-          <div className="max-w-3xl">
+          <div className="max-w-3xl mt-2">
             <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2  ">
               <p><span className="text-primary mr-2">First name: </span>{data.firstName}</p>
               <p><span className="text-primary mr-2">Last name: </span>{data.lastName}</p>

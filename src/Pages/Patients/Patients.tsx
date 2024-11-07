@@ -130,12 +130,9 @@ const PatientsTableElement = ({ patient }: { patient: patient }) => {
       <TableCell className="font-medium">{differenceInYears(new Date(), patient.birthday)}</TableCell>
       <TableCell className="font-medium">{patient.gender}</TableCell>
       <TableCell className="font-medium text-center">
-        {
-          patient.activeAdmission ?
-            <span className="px-2 py-[2px] rounded-md bg-green-600">in admission</span>
-            :
-            <span className="px-2 py-[2px] rounded-md bg-gray-500">NA</span>
-        }
+        <span className={`px-2 py-[2px] text-primary-foreground rounded-md ${patient.activeAdmission ? 'bg-green-600' : 'bg-zinc-600'}`}>
+          {patient.activeAdmission ? 'in admission' : 'NA'}
+        </span>
       </TableCell>
     </TableRow>
   )
