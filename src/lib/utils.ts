@@ -10,20 +10,24 @@ export function cn(...inputs: ClassValue[]) {
 
 
 function descendingComparator<T extends object>(a: T, b: T, orderBy: keyof T) {
-  // to compare dates values must be of type Date
-  if (orderBy === 'date') {
-    if (new Date(b[orderBy]) < new Date(a[orderBy])) {
+  const aValue:any = a[orderBy];
+  const bValue:any = b[orderBy];
+
+  // Check if the values are dates and perform date comparison
+  if (orderBy === 'date' && aValue instanceof Date && bValue instanceof Date) {
+    if (bValue < aValue) {
       return -1;
     }
-    if (new Date(b[orderBy]) > new Date(a[orderBy])) {
+    if (bValue > aValue) {
       return 1;
     }
   }
-  // no date values (amount, category)
-  if (b[orderBy] < a[orderBy]) {
+
+  // General comparison for other types
+  if (bValue < aValue) {
     return -1;
   }
-  if (b[orderBy] > a[orderBy]) {
+  if (bValue > aValue) {
     return 1;
   }
 

@@ -1,5 +1,4 @@
 import { Button, buttonVariants } from '@/components/ui/button';
-import type { CalendarProps } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -19,6 +18,8 @@ import {
 } from '@/components/ui/select';
 import { DayPicker } from 'react-day-picker';
 import { ScrollArea, ScrollBar } from './scroll-area';
+
+export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 // ---------- utils start ----------
 /**
