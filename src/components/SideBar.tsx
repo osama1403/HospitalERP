@@ -11,10 +11,11 @@ const SideBar = () => {
         <div>
 
 
-          <div className="flex flex-col h-14 justify-center items-start border-b px-4 lg:h-[60px] lg:px-6 bg-pink-600/25">
+          {/* <div className="flex flex-col h-14 justify-center items-start border-b px-4 lg:h-[60px] lg:px-6 bg-pink-600/25">
             <p className="text-lg font-semibold">Name</p>
             <p className="text-sm ">role</p>
-          </div>
+          </div> */}
+<div className="h-4"></div>
 
           <nav className="flex flex-col px-2 text-sm font-medium lg:px-4 gap-2 mt-4">
             {

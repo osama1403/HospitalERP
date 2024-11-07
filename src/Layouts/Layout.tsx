@@ -12,7 +12,7 @@ const Layout = () => {
       <SideBar />
 
       {/* Content */}
-      <div>
+      <div className='min-h-screen flex flex-col'>
         <MobileSideBar />
         <Suspense fallback={<PageLoader />}>
           <Outlet />

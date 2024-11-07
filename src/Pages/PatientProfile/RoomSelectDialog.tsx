@@ -99,8 +99,8 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
 
         {
           isFetching ?
-            <div className="min-h-44 flex justify-center">
-              <Loader2 className="w-6 h-6 animate-spin" />
+            <div className="min-h-44 flex items-center justify-center">
+              <Loader2 className="w-8 h-8 animate-spin" />
             </div>
             : error ?
               <div className="flex min-h-44 flex-col gap-3 items-center justify-center">
@@ -131,16 +131,16 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
                 </div>
 
                 <div className="max-h-96 scrollbar-hide overflow-auto">
-                  <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
+                  <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
                     {
                       filteredRooms?.length > 0 &&
                       filteredRooms?.map((room: any) => (
                         <div key={room._id} className={`p-3 rounded-xl border border-primary/15  cursor-pointer ${selectedRoom?._id === room._id ? 'bg-green-500/25' : 'bg-muted hover:bg-primary/15'}`}
                           onClick={() => { setSelectedRoom(room) }}>
-                          <p className="text-sm text-primary">{room.depName}</p>
-                          <p className="text-lg">{room.name}</p>
-                          <p>size: {room.size}</p>
-                          <p>free: {room.size - room.occupied}</p>
+                          <p className="text-sm text-primary">{room.depId.name}</p>
+                          <p className="text-base">{room.name}</p>
+                          <p className="text-sm">size: {room.size}</p>
+                          <p className="text-sm">free: {room.size - room.occupied}</p>
                         </div>
                       ))
                     }

@@ -73,7 +73,7 @@ const DoctorSelectDialog = ({ onSelect }: { onSelect?(v: doctor): void }) => {
 
         {
           isFetching ?
-            <div className="min-h-44 flex justify-center">
+            <div className="min-h-44 flex items-center justify-center">
               <Loader2 className="w-6 h-6 animate-spin" />
             </div>
             : error ?
