@@ -7,6 +7,11 @@ import { medication } from "./Medications"
 import { useForm } from "react-hook-form";
 import { useLayoutEffect } from "react";
 import { Input } from "@/components/ui/input";
+import { useMutation } from "@tanstack/react-query";
+import axiosInstance from "@/api/axios";
+import { isAxiosError } from "axios";
+import { Loader2 } from "lucide-react";
+import { useParams } from "react-router-dom";
 
 const formDefaultValues = {
   name: '',
@@ -21,6 +26,7 @@ interface medicationFormProps {
 }
 
 const MedicationFormDialog = ({ medicationToUpdate, setMedicationToUpdate, open, setOpen, }: medicationFormProps) => {
+  const { id } = useParams()
   const updateMode = !!medicationToUpdate
   const setAlert = useAlert()
 
@@ -41,16 +47,36 @@ const MedicationFormDialog = ({ medicationToUpdate, setMedicationToUpdate, open,
   }, [medicationToUpdate])
 
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({ v, isUpdate }: { v: medication, isUpdate: boolean }) => {        
+      if (isUpdate) {
+        return axiosInstance.post('/patients/update/update-med', v)
+      } else {
+        return axiosInstance.post('/patients/update/add-med', v)
+      }
+    }, onSuccess: (res) => {
+      setAlert({ text: res.data.msg, type: 'success' })
+      handleClose()
+    },
+    onError: (error) => {
+      if (isAxiosError(error) && error.response) {
+        setAlert({ text: error.response.data?.msg || 'something went wrong', type: 'error' })
+      }
+    }
+
+  })
+
+
+
   const handleCreate = (v: any) => {
     console.log(v);
-    setAlert({ text: '(Demo Alert) Medication added successfully', type: 'success' })
-    handleClose()
+    const med = { ...v, patientId: id }
+    mutate({ v: med, isUpdate: false })
   }
 
-  const handleUpdate = () => {
-    //DEMO ALERT
-    setAlert({ text: '(Demo Alert)\n Cannot update medication', type: 'error' })
-    handleClose()
+  const handleUpdate = (v: any) => {
+    const med = { ...v, patientId: id }
+    mutate({ v: med, isUpdate: true })
   }
 
   const handleClose = () => {
@@ -120,12 +146,12 @@ const MedicationFormDialog = ({ medicationToUpdate, setMedicationToUpdate, open,
           </Button>
           {
             updateMode ?
-              <Button disabled={!isDirty} className='rounded-lg' onClick={form.handleSubmit(handleUpdate)}>
-                Update
+              <Button disabled={!isDirty || isPending} className='flex items-center gap-1 rounded-lg' onClick={form.handleSubmit(handleUpdate)}>
+                Update {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               </Button>
               :
-              <Button disabled={!isDirty} className='rounded-lg' onClick={form.handleSubmit(handleCreate)}>
-                Create
+              <Button disabled={!isDirty} className='flex items-center gap-1 rounded-lg' onClick={form.handleSubmit(handleCreate)}>
+                Create {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               </Button>
           }
         </DialogFooter>

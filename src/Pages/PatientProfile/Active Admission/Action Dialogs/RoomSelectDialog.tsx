@@ -1,79 +1,21 @@
+import axiosInstance from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useQuery } from "@tanstack/react-query";
+import { CircleAlert, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 
 export interface room {
-  id: number;
+  _id: string;
   name: string;
   depName: string;
   depId: number;
   size: number;
-  available: number;
+  occupied: number;
 }
 
-const dummyRooms: room[] = [
-  {
-    id: 1,
-    name: '12/3',
-    depName: 'private',
-    depId: 2,
-    size: 2,
-    available: 2
-  },
-  {
-    id: 2,
-    name: '11/3',
-    depName: 'ICU',
-    depId: 1,
-    size: 1,
-    available: 1
-  },
-  {
-    id: 3,
-    name: '3/2',
-    depName: 'private',
-    depId: 2,
-    size: 1,
-    available: 1
-  },
-  {
-    id: 4,
-    name: '5/2',
-    depName: 'private',
-    depId: 2,
-    size: 2,
-    available: 1
-  },
-  {
-    id: 5,
-    name: '8/2',
-    depName: 'private',
-    depId: 2,
-    size: 2,
-    available: 1
-  },
-  {
-    id: 6,
-    name: '1/13',
-    depName: 'ICU',
-    depId: 1,
-    size: 1,
-    available: 1
-  },
-]
-
-const dummyDepartments = [
-  {
-    id: 1,
-    name: 'ICU'
-  },
-  {
-    id: 2,
-    name: 'private'
-  }
-]
 
 
 const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
@@ -83,8 +25,27 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
 
 
   // fetch available rooms and their departments and display them 
-  const [availableDepartments, setAvailableDepartments] = useState(dummyDepartments)
-  const [availableRooms, setAvailableRooms] = useState(dummyRooms)
+  const [availableDepartments, setAvailableDepartments] = useState([])
+  const [availableRooms, setAvailableRooms] = useState<room[]>([])
+
+
+
+  const { data, error, isFetching, refetch } = useQuery({
+    queryKey: ['available-rooms'],
+    queryFn: async ({ signal }) => {
+      const response = await axiosInstance.get(`/rooms/available`, { signal })
+      return response.data
+    },
+    enabled: false
+  })
+
+  useEffect(() => {
+    if (data) {
+      setAvailableRooms(data.availableRooms)
+      setAvailableDepartments(data.availableDepartments)
+    }
+  }, [data])
+
 
   // filtered rooms based on department
   const filteredRooms = useMemo(() => {
@@ -92,7 +53,7 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
       if (filterDepartment === 'All') {
         return availableRooms
       } else {
-        return availableRooms.filter(room => {
+        return availableRooms.filter((room: any) => {
           return String(room.depId) === filterDepartment
         })
       }
@@ -116,8 +77,28 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
     handleClose()
   }
 
+  if (isFetching) {
+    return (
+      <div className="min-h-44 flex justify-center">
+       <Loader2 className="w-6 h-6 animate-spin"/>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-44 flex-col gap-3 items-center justify-center">
+        <CircleAlert />
+        <p>Something went wrong</p>
+        <Button size={'sm'} variant={'outline'} onClick={() => { refetch() }}>Retry</Button>
+      </div>
+    )
+  }
+
+
+
   return (
-    <Dialog open={open} onOpenChange={(open) => { open ? setOpen(open) : handleClose() }}>
+    <Dialog open={open} onOpenChange={(open) => { if (open) { setOpen(open); refetch(); } else { handleClose() } }}>
       <DialogTrigger asChild>
         <Button className="rounded-lg px-3 py-1">
           Select Room
@@ -144,8 +125,8 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
             <SelectContent>
               <SelectItem value="All">All</SelectItem>
               {
-                availableDepartments.map(el => (
-                  <SelectItem value={String(el.id)}>{el.name}</SelectItem>
+                availableDepartments.map((el: any) => (
+                  <SelectItem value={String(el._id)}>{el.name}</SelectItem>
                 ))
               }
             </SelectContent>
@@ -156,13 +137,13 @@ const RoomSelectDialog = ({ onSelect }: { onSelect?(v: room): void }) => {
           <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
             {
               filteredRooms?.length > 0 &&
-              filteredRooms?.map(room => (
-                <div key={room.id} className={`p-3 rounded-xl border border-primary/15  cursor-pointer ${selectedRoom?.id === room.id ? 'bg-green-500/25' : 'bg-muted hover:bg-primary/15'}`}
+              filteredRooms?.map((room: any) => (
+                <div key={room._id} className={`p-3 rounded-xl border border-primary/15  cursor-pointer ${selectedRoom?._id === room._id ? 'bg-green-500/25' : 'bg-muted hover:bg-primary/15'}`}
                   onClick={() => { setSelectedRoom(room) }}>
                   <p className="text-sm text-primary">{room.depName}</p>
                   <p className="text-lg">{room.name}</p>
                   <p>size: {room.size}</p>
-                  <p>free: {room.available}</p>
+                  <p>free: {room.size - room.occupied}</p>
                 </div>
               ))
             }

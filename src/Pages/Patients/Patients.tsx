@@ -8,6 +8,7 @@ import useDebounce from "@/hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/api/axios";
 import { differenceInYears } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 
 interface patient {
@@ -116,8 +117,11 @@ export default Patients;
 
 
 const PatientsTableElement = ({ patient }: { patient: patient }) => {
+  const navigate = useNavigate()
   const handleClick = (id: string) => {
     console.log(id);
+    navigate(`${id}`)
+
   }
 
   return (

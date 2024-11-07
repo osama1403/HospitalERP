@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import EmergencyContacts from "./EmergencyContacts";
 import {
   Table,
@@ -8,55 +7,71 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { format, sub } from "date-fns";
+import { differenceInYears, format } from "date-fns";
 import MedicalHistory from "./Medical history/MedicalHistory";
 import Medications from "./Medications/Medications";
 import withAlert from "@/Hoc/withAlert";
 import ActiveAdmission from "./Active Admission/ActiveAdmission";
-
-
-
-const d = new Date()
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/api/axios";
+import PageLoader from "@/components/PageLoader";
 
 
 
 export interface Admission {
-  id: number;
+  _id: string;
   date: Date;
-  dischargeDate: Date | null;
+  dischargeDate?: Date;
 }
-const admissions: Admission[] = [
-  {
-    id: 2,
-    date: sub(d, { days: 2 }),
-    dischargeDate: null,
-  },
-  {
-    id: 1,
-    date: sub(d, { days: 2 }),
-    dischargeDate: sub(d, { days: 1 }),
-  },
-]
+
 
 const PatientProfile = () => {
+  const { id } = useParams()
+  const { data, isFetching, error } = useQuery({
+    queryKey: ['patient', id],
+    queryFn: async ({ signal }) => {
+      const response = await axiosInstance.get(`/patients/${id}`, { signal })
+      return response.data
+    }
+  })
+
+
+  if (isFetching) {
+    return (
+      <PageLoader />
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <p className="text-lg text-destructive">{error.message}</p>
+      </div>
+    )
+  }
+
+  const activeAdmissionId = data?.admissions?.find((el: any) => el.dischargeDate === undefined)?._id
+
   return (
     <>
       <div className="px-4 py-6">
+
         <div className="p-4 rounded-xl bg-muted">
-          <p className="text-primary text-3xl mb-4">Patient: John doe</p>
+          <p className="text-primary text-3xl mb-4">Patient: {`${data.firstName} ${data.lastName}`}</p>
           <div className="max-w-3xl">
             <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2  ">
-              <p><span className="text-primary mr-2">First name:</span>John</p>
-              <p><span className="text-primary mr-2">Last name:</span>Doe</p>
-              <p><span className="text-primary mr-2">Gender:</span>Male</p>
-              <p><span className="text-primary mr-2">Age:</span>45</p>
-              <p><span className="text-primary mr-2">Phone:</span>0912345678</p>
-              <p><span className="text-primary mr-2">Adress:</span>city-street</p>
+              <p><span className="text-primary mr-2">First name: </span>{data.firstName}</p>
+              <p><span className="text-primary mr-2">Last name: </span>{data.lastName}</p>
+              <p><span className="text-primary mr-2">Gender: </span>{data.gender}</p>
+              <p><span className="text-primary mr-2">Age: </span>{differenceInYears(new Date(), data.birthday)}</p>
+              <p><span className="text-primary mr-2">Phone: </span>{data.phone}</p>
+              <p><span className="text-primary mr-2">Adress: </span>{data.adress || '-'}</p>
             </div>
           </div>
 
           <div className="mt-4">
-            <EmergencyContacts contacts={[]} />
+            <EmergencyContacts contacts={data.emergencyContacts} />
           </div>
         </div>
 
@@ -65,20 +80,24 @@ const PatientProfile = () => {
         {/* Medical history and medications */}
 
         <div className="grid lg:grid-cols-2 gap-6 mt-6">
-          <MedicalHistory />
-          <Medications />
+          <MedicalHistory medicalHistory={data.medicalHistory} />
+          <Medications medications={data.medications} />
         </div>
 
 
         {/* Active Admission */}
-        <ActiveAdmission/>
+
+        {
+          activeAdmissionId &&
+          <ActiveAdmission admissionId={activeAdmissionId} />
+        }
 
 
 
 
         {/* Admissions */}
         <div className="mt-6">
-          <p className=" text-2xl font-medium text-primary mb-4">Admissions: 3</p>
+          <p className=" text-2xl font-medium text-primary mb-4">Admissions: {data.admissions?.length}</p>
           <Table className="max-w-2xl w-full min-w-[400px]">
             <TableHeader>
               <TableRow className="bg-primary hover:bg-primary">
@@ -92,8 +111,8 @@ const PatientProfile = () => {
             <TableBody>
               {
 
-                admissions.length > 0 ?
-                  admissions.map((admission) => (
+                data.admissions?.length > 0 ?
+                  data.admissions.map((admission: Admission) => (
                     <TableRow className="even:bg-muted cursor-pointer hover:bg-primary/25" onClick={() => { }}>
                       <TableCell>{format(admission.date, 'PPpp')}</TableCell>
                       <TableCell>{

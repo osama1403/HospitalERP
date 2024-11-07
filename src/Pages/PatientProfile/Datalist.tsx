@@ -47,9 +47,9 @@ const DataList = ({ title, onAddClick = () => { }, children }: DataListProps) =>
 
 
 interface elementType {
-  id: number;
+  _id: string;
   name: string;
-  description: string;
+  description?: string;
 }
 
 interface dataElementProps<T> {

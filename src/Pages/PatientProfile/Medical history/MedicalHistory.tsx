@@ -1,15 +1,15 @@
 import { useCallback, useState } from "react";
 import { DataElement, DataList } from "../Datalist";
 import MedicalHistoryFormDialog from "./MedicalHistoryFormDialog";
-import ConfirmDialog from "@/components/ConfirmDialog";
+import MedicalHistoryDeleteDialog from "./MedicalHistoryDeleteDialog";
 
 export interface medicalHistory {
-  id: number;
+  _id: string;
   name: string;
-  description: string;
+  description?: string;
 }
 
-const MedicalHistory = () => {
+const MedicalHistory = ({ medicalHistory }: { medicalHistory: medicalHistory[] }) => {
 
   const [medicalHistoryToUpdate, setMedicalHistoryToUpdate] = useState<medicalHistory | null>(null)
   const [medicalHistoryToDelete, setMedicalHistoryToDelete] = useState<medicalHistory | null>(null)
@@ -30,28 +30,25 @@ const MedicalHistory = () => {
         open={medicalHistoryFormOpen}
         setOpen={setMedicalHistoryFormOpen}
       />
-      <ConfirmDialog<medicalHistory>
-        element={medicalHistoryToDelete}
-        setElement={setMedicalHistoryToDelete}
-        title={`Delete ${medicalHistoryToDelete?.name}?`}
-        message="Are you sure you want to delete this element?"
-        action={handleDelete}
+
+      <MedicalHistoryDeleteDialog
+        medicalHistoryToDelete={medicalHistoryToDelete}
+        setMedicalHistoryToDelete={setMedicalHistoryToDelete}
       />
 
-      <DataList title={`Medical History: ${6}`} onAddClick={() => { setMedicalHistoryFormOpen(true) }}>
+      <DataList title={`Medical History: ${medicalHistory.length}`} onAddClick={() => { setMedicalHistoryFormOpen(true) }}>
         {
-          [...Array(6).keys()].map((_, idx) => (
+          medicalHistory?.length>0?
+          medicalHistory.map((el) => (
             <DataElement
-              key={idx} //demo
-              element={{
-                id: 1,
-                name: "Data element",
-                description: "lorem ipsum dolor sit amet,asjk jaowu alkn"
-              }}
+              key={el._id}
+              element={{ ...el }}
               handleDelete={setMedicalHistoryToDelete}
               handleEdit={setMedicalHistoryToUpdate}
             />
           ))
+          :
+          <p className="text-muted-foreground text-center">no elements</p>
         }
       </DataList>
     </>

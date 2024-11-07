@@ -6,16 +6,24 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axiosInstance from "@/api/axios";
+import { isAxiosError } from "axios";
 
 const formDefaultValues = {
   title: '',
   description: ''
 }
 
+interface note {
+  title: string;
+  description: string;
+}
 
 
-const NoteDialog = () => {
 
+const NoteDialog = ({id}:{id:string}) => {
+  const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const setAlert = useAlert()
 
@@ -27,9 +35,27 @@ const NoteDialog = () => {
 
   const { isDirty } = form.formState
 
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({ v }: { v: note }) => {
+      return axiosInstance.post('/admission/update/add-note', v)
+    },
+    onSuccess: (res) => {
+      setAlert({ text: res.data.msg, type: 'success' })
+      queryClient.invalidateQueries({queryKey:['active-admission']})
+      handleClose()
+    },
+    onError: (error) => {
+      if (isAxiosError(error) && error.response) {
+        setAlert({ text: error.response.data?.msg || 'something went wrong', type: 'error' })
+      }
+    }
+  })
+
+
+
   const handleSubmitNote = (v: any) => {
-    console.log(v);
-    setAlert({ text: 'Note added successfully', type: 'success' })
+    mutate({...v,id})
   }
 
   const handleClose = () => {
@@ -103,7 +129,7 @@ const NoteDialog = () => {
             Close
           </Button>
 
-          <Button disabled={!isDirty} className='rounded-lg' onClick={form.handleSubmit(handleSubmitNote)}>
+          <Button disabled={!isDirty||isPending} className='rounded-lg' onClick={form.handleSubmit(handleSubmitNote)}>
             Create
           </Button>
 

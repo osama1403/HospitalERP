@@ -6,6 +6,11 @@ import { medicalHistory } from "./MedicalHistory"
 import { useForm } from "react-hook-form";
 import { useLayoutEffect } from "react";
 import { Input } from "@/components/ui/input";
+import { useParams } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import axiosInstance from "@/api/axios";
+import { isAxiosError } from "axios";
+import { Loader2 } from "lucide-react";
 
 const formDefaultValues = {
   name: '',
@@ -22,6 +27,7 @@ interface medicalHistoryFormProps {
 const MedicalHistoryFormDialog = ({ medicalHistoryToUpdate, setMedicalHistoryToUpdate, open, setOpen, }: medicalHistoryFormProps) => {
   const updateMode = !!medicalHistoryToUpdate
   const setAlert = useAlert()
+  const { id } = useParams()
 
   const form = useForm({
     mode: 'onChange',
@@ -32,7 +38,6 @@ const MedicalHistoryFormDialog = ({ medicalHistoryToUpdate, setMedicalHistoryToU
 
 
   useLayoutEffect(() => {
-    console.log('effect');
     if (medicalHistoryToUpdate) {
       form.reset({ ...medicalHistoryToUpdate })
       setOpen(true)
@@ -40,16 +45,34 @@ const MedicalHistoryFormDialog = ({ medicalHistoryToUpdate, setMedicalHistoryToU
   }, [medicalHistoryToUpdate])
 
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({ v, isUpdate }: { v: medicalHistory, isUpdate: boolean }) => {
+      if (isUpdate) {
+        return axiosInstance.post('/patients/update/update-medical-history', v)
+      } else {
+        return axiosInstance.post('/patients/update/add-medical-history', v)
+      }
+    }, onSuccess: (res) => {
+      setAlert({ text: res.data.msg, type: 'success' })
+      handleClose()
+    },
+    onError: (error) => {
+      if (isAxiosError(error) && error.response) {
+        setAlert({ text: error.response.data?.msg || 'something went wrong', type: 'error' })
+      }
+    }
+
+  })
+
+
   const handleCreate = (v: any) => {
-    console.log(v);
-    setAlert({ text: '(Demo Alert) Medication added successfully', type: 'success' })
-    handleClose()
+    const medHis = { ...v, patientId: id }
+    mutate({ v: medHis, isUpdate: false })
   }
 
-  const handleUpdate = () => {
-    //DEMO ALERT
-    setAlert({ text: '(Demo Alert)\n Cannot update medication', type: 'error' })
-    handleClose()
+  const handleUpdate = (v: any) => {
+    const medHis = { ...v, patientId: id }
+    mutate({ v: medHis, isUpdate: true })
   }
 
   const handleClose = () => {
@@ -119,12 +142,12 @@ const MedicalHistoryFormDialog = ({ medicalHistoryToUpdate, setMedicalHistoryToU
           </Button>
           {
             updateMode ?
-              <Button disabled={!isDirty} className='rounded-lg' onClick={form.handleSubmit(handleUpdate)}>
-                Update
+              <Button disabled={!isDirty || isPending} className='flex items-center gap-1 rounded-lg' onClick={form.handleSubmit(handleUpdate)}>
+                Update {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               </Button>
               :
-              <Button disabled={!isDirty} className='rounded-lg' onClick={form.handleSubmit(handleCreate)}>
-                Create
+              <Button disabled={!isDirty} className='flex items-center gap-1 rounded-lg' onClick={form.handleSubmit(handleCreate)}>
+                Create {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               </Button>
           }
         </DialogFooter>

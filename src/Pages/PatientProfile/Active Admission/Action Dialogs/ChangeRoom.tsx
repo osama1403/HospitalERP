@@ -4,13 +4,33 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import RoomSelectDialog from "./RoomSelectDialog";
 import { room } from "./RoomSelectDialog";
+import { useMutation } from "@tanstack/react-query";
+import axiosInstance from "@/api/axios";
+import { isAxiosError } from "axios";
 
-const ChangeRoom = () => {
+const ChangeRoom = ({ id, room }: { id: string, room: any }) => {
 
   const setAlert = useAlert()
 
   const [open, setOpen] = useState(false)
   const [selectedRoom, setSelectedRoom] = useState<room | null>(null)
+
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (v: any) => {
+      return await axiosInstance.post('/admission/change-room', v)
+    },
+    onSuccess: (res) => {
+      setAlert({ text: res.data.msg, type: 'success' })
+      handleClose()
+    },
+    onError: (error) => {
+      if (isAxiosError(error) && error.response) {
+        setAlert({ text: error.response.data?.msg || 'something went wrong', type: 'error' })
+      }
+    }
+  })
+
 
   const handleClose = () => {
     setOpen(false)
@@ -18,8 +38,7 @@ const ChangeRoom = () => {
   }
 
   const handleChangeRoom = () => {
-    setAlert({ text: 'room changed successfully', type: 'success' })
-    handleClose()
+    mutate({ admissionId: id, roomId: selectedRoom?._id })
   }
 
   return (
@@ -41,7 +60,7 @@ const ChangeRoom = () => {
 
 
         <div className="text-lg">
-          <p>From: <span className="text-primary">ICU - 12/3</span></p>
+          <p>From: <span className="text-primary">{room?.depId?.name} - {room?.name}</span></p>
           <p>To: <span className="text-primary">{selectedRoom?.depName} - {selectedRoom?.name}</span></p>
         </div>
         <div className="w-fit mb-4">
@@ -55,7 +74,7 @@ const ChangeRoom = () => {
             Close
           </Button>
 
-          <Button disabled={!selectedRoom} className='rounded-lg' onClick={handleChangeRoom}>
+          <Button disabled={!selectedRoom || selectedRoom?._id === room?._id} className='rounded-lg' onClick={handleChangeRoom}>
             Submit
           </Button>
 
