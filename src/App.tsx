@@ -1,14 +1,19 @@
+import { lazy } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Home from './Pages/Home/Home'
-import Layout from './Layouts/Layout'
-import Login from './Pages/Login/Login'
-import Departments from './Pages/Departments/Departments'
-import PatientRegestration from './Pages/Patients Regestration/PatientRegestration'
-import Admissions from './Pages/Admissions/Admissions'
-import Accounts from './Pages/Accounts/Accounts'
-import Staff from './Pages/Staff/Staff'
-import PatientProfile from './Pages/PatientProfile/PatientProfile'
-import Patients from './Pages/Patients/Patients'
+const Home = lazy(() => import('./Pages/Home/Home'))
+const Layout = lazy(() => import('./Layouts/Layout'))
+const Login = lazy(() => import('./Pages/Login/Login'))
+const Departments = lazy(() => import('./Pages/Departments/Departments'))
+const PatientRegestration = lazy(() => import('./Pages/Patients Regestration/PatientRegestration'))
+const Admissions = lazy(() => import('./Pages/Admissions/Admissions'))
+const Accounts = lazy(() => import('./Pages/Accounts/Accounts'))
+const Staff = lazy(() => import('./Pages/Staff/Staff'))
+const PatientProfile = lazy(() => import('./Pages/PatientProfile/PatientProfile'))
+const Patients = lazy(() => import('./Pages/Patients/Patients'))
+
+
+
+
 
 function App() {
   return (

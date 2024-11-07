@@ -1,6 +1,8 @@
 import { Outlet } from 'react-router-dom'
 import SideBar from "@/components/SideBar";
 import MobileSideBar from "@/components/MobileSideBar";
+import { Suspense } from 'react';
+import PageLoader from '@/components/PageLoader';
 
 const Layout = () => {
 
@@ -12,7 +14,9 @@ const Layout = () => {
       {/* Content */}
       <div>
         <MobileSideBar />
-        <Outlet />
+        <Suspense fallback={<PageLoader />}>
+          <Outlet />
+        </Suspense>
       </div>
     </div>
   );
